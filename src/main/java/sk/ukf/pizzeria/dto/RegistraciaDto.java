@@ -7,6 +7,9 @@ public class RegistraciaDto {
     @NotBlank(message = "Meno nesmie byť prázdne")
     private String meno;
 
+    @NotBlank(message = "Priezvisko nesmie byť prázdne")
+    private String priezvisko;
+
     @Email(message = "Zadajte platný email")
     private String email;
 
@@ -19,6 +22,14 @@ public class RegistraciaDto {
 
     public void setMeno(String meno) {
         this.meno = meno;
+    }
+
+    public String getPriezvisko() {
+        return priezvisko;
+    }
+
+    public void setPriezvisko(String priezvisko) {
+        this.priezvisko = priezvisko;
     }
 
     public String getEmail() {

@@ -10,7 +10,11 @@ import java.util.List;
 @Repository
 public interface ObjednavkaRepository extends JpaRepository<Objednavka, Long> {
 
-    List<Objednavka> findByStav(StavObjednavky stav);
+    List<Objednavka> findAllByStav(StavObjednavky stav);
 
-    List<Objednavka> findByPouzivatelIdOrderByCreatedAtDesc(Long userId);
+    List<Objednavka> findAllByStavIn(List<StavObjednavky> stavy);
+
+    List<Objednavka> findAllByPouzivatelEmailOrderByCreatedAtDesc(String email);
+
+    boolean existsByStav(StavObjednavky stav);
 }
