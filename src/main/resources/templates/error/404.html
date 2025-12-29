@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('404 - Nenájdené')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+<div class="container text-center mt-5">
+    <div class="py-5">
+        <h1 class="display-1 fw-bold text-warning">404</h1>
+        <h2>Ups! Stránka sa nenašla</h2>
+        <p class="lead">Vyzerá to tak, že hľadaná pizza alebo stránka neexistuje.</p>
+        <a href="/" class="btn btn-warning btn-lg mt-3">Späť na hlavné menu</a>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

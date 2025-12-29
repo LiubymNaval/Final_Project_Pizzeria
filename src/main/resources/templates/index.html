@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Menu')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6 mx-auto">
+            <form th:action="@{/search}" method="get" class="d-flex">
+                <input class="form-control me-2" type="search" name="query" placeholder="Hľadať pizzu (názov, tag)..." aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Hľadať</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col" th:each="pizza : ${pizzas}">
+            <div class="card h-100 shadow-sm">
+                <img th:src="${pizza.obrazokUrl != null && pizza.obrazokUrl != '' ? pizza.obrazokUrl : 'https://via.placeholder.com/300x200?text=No+Image'}"
+                     class="card-img-top" alt="Pizza Image" style="height: 200px; object-fit: cover;">
+
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${pizza.nazov}">Pizza Name</h5>
+
+                    <div class="mb-2">
+                        <span th:each="tag : ${pizza.tagy}" class="badge bg-secondary me-1" th:text="${tag.nazov}">Tag</span>
+                    </div>
+
+                    <p class="card-text text-muted" th:text="${#strings.abbreviate(pizza.popis, 100)}">Description...</p>
+
+                    <h6 class="text-primary fw-bold" th:if="${!pizza.velkosti.isEmpty()}">
+                        Cena od: <span th:text="${pizza.velkosti[0].cena} + ' €'">0.00 €</span>
+                    </h6>
+                </div>
+
+                <div class="card-footer bg-white border-top-0 d-flex justify-content-between align-items-center">
+                    <a th:href="@{'/pizza/' + ${pizza.slug}}" class="btn btn-sm btn-outline-primary">Detaily</a>
+
+                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" th:data-bs-target="'#cartModal'+${pizza.id}">
+                        <i class="bi bi-cart-plus"></i> Do košíka
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal fade" th:id="'cartModal'+${pizza.id}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form th:action="@{/cart/add}" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title" th:text="${pizza.nazov}"></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Vyberte veľkosť:</p>
+                                <select name="velkostId" class="form-select">
+                                    <option th:each="v : ${pizza.velkosti}"
+                                            th:value="${v.id}"
+                                            th:text="${v.nazovVelkosti + ' (' + v.cena + ' €)'}">
+                                    </option>
+                                </select>
+                                <input type="hidden" name="pizzaId" th:value="${pizza.id}">
+                                <input type="number" name="mnozstvo" value="1" min="1" class="form-control mt-2" placeholder="Množstvo">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Pridať</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

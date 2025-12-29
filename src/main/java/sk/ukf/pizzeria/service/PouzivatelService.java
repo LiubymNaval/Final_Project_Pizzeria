@@ -5,6 +5,7 @@ import sk.ukf.pizzeria.dto.ProfilDto;
 import sk.ukf.pizzeria.dto.RegistraciaDto;
 import sk.ukf.pizzeria.entity.Pouzivatel;
 import sk.ukf.pizzeria.entity.Rola;
+import sk.ukf.pizzeria.exception.ObjectNotFoundException;
 import sk.ukf.pizzeria.repository.PouzivatelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,9 +36,10 @@ public class PouzivatelService {
         user.setEmail(dto.getEmail());
         user.setHeslo(passwordEncoder.encode(dto.getHeslo()));
         user.setAktivny(true);
+        user.setTelefon(dto.getTelefon());
 
         Rola zakladnaRola = rolaRepository.findByNazov("ROLE_ZAKAZNIK")
-                .orElseThrow(() -> new RuntimeException("Chyba: Rola ROLE_ZAKAZNIK neexistuje!"));
+                .orElseThrow(() -> new ObjectNotFoundException("Rola", "ROLE_ZAKAZNIK"));
         user.setRoly(Collections.singleton(zakladnaRola));
 
         pouzivatelRepository.save(user);
@@ -50,7 +52,7 @@ public class PouzivatelService {
 
     public Pouzivatel findByEmail(String email) {
         return pouzivatelRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Používateľ s emailom " + email + " nebol nájdený."));
+                .orElseThrow(() -> new ObjectNotFoundException("Používateľ s emailom", email));
     }
 
     @Transactional
@@ -76,9 +78,9 @@ public class PouzivatelService {
     @Transactional
     public void changeUserRole(Long userId, String roleName) {
         Pouzivatel user = pouzivatelRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Používateľ nebol nájdený"));
+                .orElseThrow(() -> new ObjectNotFoundException("Používateľ", userId));
         Rola newRola = rolaRepository.findByNazov(roleName)
-                .orElseThrow(() -> new RuntimeException("Rola nebola nájdená"));
+                .orElseThrow(() -> new ObjectNotFoundException("Rola", roleName));
 
         user.getRoly().clear();
         user.getRoly().add(newRola);

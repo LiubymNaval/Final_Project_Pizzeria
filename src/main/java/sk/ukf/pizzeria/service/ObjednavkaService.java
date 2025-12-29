@@ -1,9 +1,11 @@
 package sk.ukf.pizzeria.service;
 
+import org.springframework.security.access.AccessDeniedException;
 import sk.ukf.pizzeria.entity.Objednavka;
 import sk.ukf.pizzeria.entity.PolozkaKosika;
 import sk.ukf.pizzeria.entity.PolozkaObjednavky;
 import sk.ukf.pizzeria.entity.Pouzivatel;
+import sk.ukf.pizzeria.exception.ObjectNotFoundException;
 import sk.ukf.pizzeria.model.StavObjednavky;
 import sk.ukf.pizzeria.repository.ObjednavkaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +76,11 @@ public class ObjednavkaService {
     @Transactional
     public void cancelOrder(Long orderId, String userEmail) {
         Objednavka objednavka = objednavkaRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Objednávka nenájdená"));
+                .orElseThrow(() -> new ObjectNotFoundException("Objednávka", orderId));
 
 
         if (!objednavka.getPouzivatel().getEmail().equals(userEmail)) {
-            throw new RuntimeException("Nemáte oprávnenie zrušiť tento objednávku!");
+            throw new AccessDeniedException("Nemáte oprávnenie zrušiť tento objednávku!");
         }
 
         if (objednavka.getStav() == StavObjednavky.CAKAJUCA) {
@@ -92,7 +94,7 @@ public class ObjednavkaService {
     @Transactional
     public void changeStatus(Long orderId, StavObjednavky newStatus) {
         Objednavka objednavka = objednavkaRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Objednávka nenájdená"));
+                .orElseThrow(() -> new ObjectNotFoundException("Objednávka", orderId));
 
         objednavka.setStav(newStatus);
         objednavkaRepository.save(objednavka);

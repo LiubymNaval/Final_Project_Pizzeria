@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Môj Profil')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4 text-center">
+            <img th:src="${user.obrazokUrl != null && user.obrazokUrl != '' ? user.obrazokUrl : 'https://via.placeholder.com/150'}"
+                 class="rounded-circle img-thumbnail mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+            <h3 th:text="${user.meno + ' ' + user.priezvisko}">Janko Hraško</h3>
+            <span class="badge bg-info" th:each="rola : ${user.roly}" th:text="${rola.nazov}">ROLE</span>
+        </div>
+
+        <div class="col-md-8">
+            <div th:if="${param.success}" class="alert alert-success">Zmeny boli úspešne uložené.</div>
+
+            <div class="card mb-4">
+                <div class="card-header">Upraviť údaje</div>
+                <div class="card-body">
+                    <form th:action="@{/profile/update}" method="post">
+                        <div class="mb-3">
+                            <label>Meno</label>
+                            <input type="text" name="meno" th:value="${user.meno}" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Priezvisko</label>
+                            <input type="text" name="priezvisko" th:value="${user.priezvisko}" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Telefón</label>
+                            <input type="text" name="telefon" th:value="${user.telefon}" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label>URL Avatara</label>
+                            <input type="text" name="obrazokUrl" th:value="${user.obrazokUrl}" class="form-control" placeholder="http://...">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Uložiť zmeny</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-warning mb-4">
+                <div class="card-header bg-warning text-dark">Zmena hesla</div>
+                <div class="card-body">
+                    <form th:action="@{/profile/change-password}" method="post">
+                        <div class="input-group">
+                            <input type="password" name="newPassword" class="form-control" placeholder="Nové heslo" required>
+                            <button class="btn btn-outline-dark" type="submit">Zmeniť</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('Naozaj chcete zmazať účet?');">
+                    <button type="submit" class="btn btn-danger btn-sm">Zmazať účet</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

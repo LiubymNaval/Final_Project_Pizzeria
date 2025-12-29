@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Registrácia')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-center">
+                    <h4>Nová Registrácia</h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/registration}" th:object="${user}" method="post">
+
+                        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                            <ul><li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li></ul>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Meno</label>
+                            <input type="text" th:field="*{meno}" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Priezvisko</label>
+                            <input type="text" th:field="*{priezvisko}" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="email" th:field="*{email}" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Heslo</label>
+                            <input type="password" th:field="*{heslo}" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Telefón</label>
+                            <input type="text" th:field="*{telefon}" class="form-control" placeholder="09XX XXX XXX">
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Zaregistrovať sa</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    Už máte účet? <a href="/login">Prihlásiť sa</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

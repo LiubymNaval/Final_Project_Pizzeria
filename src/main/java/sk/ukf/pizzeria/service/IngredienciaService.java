@@ -3,6 +3,7 @@ package sk.ukf.pizzeria.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sk.ukf.pizzeria.entity.Ingrediencia;
+import sk.ukf.pizzeria.exception.ObjectNotFoundException;
 import sk.ukf.pizzeria.repository.IngredienciaRepository;
 
 import java.util.List;
@@ -32,6 +33,6 @@ public class IngredienciaService {
 
     public Ingrediencia getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ingrediencia s ID " + id + " nebola nájdená"));
+                .orElseThrow(() -> new ObjectNotFoundException("Ingrediencia", id));
     }
 }

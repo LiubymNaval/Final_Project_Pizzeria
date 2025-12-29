@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Správa používateľov')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-4">
+    <h2>Správa používateľov</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Meno</th>
+                <th>Rola</th>
+                <th>Zmeniť rolu</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.id}">1</td>
+                <td th:text="${u.email}">mail@mail.com</td>
+                <td th:text="${u.meno + ' ' + u.priezvisko}">Name</td>
+                <td>
+                    <span th:each="r : ${u.roly}" class="badge bg-secondary me-1" th:text="${r.nazov}">ROLE</span>
+                </td>
+                <td>
+                    <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" class="d-flex">
+                        <select name="roleName" class="form-select form-select-sm me-2">
+                            <option value="ROLE_ZAKAZNIK">Zákazník</option>
+                            <option value="ROLE_KUCHAR">Kuchár</option>
+                            <option value="ROLE_KURIER">Kuriér</option>
+                            <option value="ROLE_ADMIN">Admin</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Uložiť</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

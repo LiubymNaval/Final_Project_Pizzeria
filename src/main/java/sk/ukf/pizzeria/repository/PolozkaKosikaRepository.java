@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sk.ukf.pizzeria.entity.PolozkaKosika;
 import sk.ukf.pizzeria.entity.Pouzivatel;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PolozkaKosikaRepository extends JpaRepository<PolozkaKosika, Long> {
@@ -15,4 +16,6 @@ public interface PolozkaKosikaRepository extends JpaRepository<PolozkaKosika, Lo
     void deleteByPouzivatel(Pouzivatel pouzivatel);
 
     List<PolozkaKosika> findAllByPouzivatel(Pouzivatel pouzivatel);
+
+    Optional<PolozkaKosika> findByPouzivatelAndPizzaVelkost_Id(Pouzivatel user, Long velkostId);
 }

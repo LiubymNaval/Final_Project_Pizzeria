@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin - Pizze')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Správa pízz</h2>
+        <a href="/admin/pizzas/add" class="btn btn-success"><i class="bi bi-plus-lg"></i> Pridať pizzu</a>
+    </div>
+
+    <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+        <tr>
+            <th>Obrázok</th>
+            <th>Názov</th>
+            <th>Slug</th>
+            <th>Ceny (33/40/50)</th>
+            <th>Stav</th>
+            <th>Akcie</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="pizza : ${pizzas}">
+            <td>
+                <img th:src="${pizza.obrazokUrl}" style="width: 50px; height: 50px; object-fit: cover;" alt="img">
+            </td>
+            <td th:text="${pizza.nazov}">Margarita</td>
+            <td th:text="${pizza.slug}" class="text-muted small">margarita</td>
+            <td>
+                    <span th:each="v : ${pizza.velkosti}" class="badge bg-light text-dark border me-1">
+                        <span th:text="${v.cena}"></span>€
+                    </span>
+            </td>
+            <td>
+                <span th:if="${pizza.aktivna}" class="badge bg-success">Aktívna</span>
+                <span th:unless="${pizza.aktivna}" class="badge bg-secondary">Skrytá</span>
+            </td>
+            <td>
+                <a th:href="@{/admin/pizzas/edit/{id}(id=${pizza.id})}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-pencil"></i>
+                </a>
+
+                <form th:action="@{/admin/pizzas/delete/{id}(id=${pizza.id})}" method="post" style="display:inline;"
+                      onsubmit="return confirm('Naozaj zmazať?');">
+                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

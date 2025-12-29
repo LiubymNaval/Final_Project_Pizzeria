@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Váš košík')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-4">
+    <h2>🛒 Nákupný košík</h2>
+
+    <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" class="alert alert-warning mt-3">
+        Váš košík je prázdny. <a href="/">Späť na menu</a>.
+    </div>
+
+    <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}">
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>Pizza</th>
+                        <th>Veľkosť</th>
+                        <th>Cena/ks</th>
+                        <th>Množstvo</th>
+                        <th>Spolu</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${cartItems}">
+                        <td th:text="${item.pizzaVelkost.pizza.nazov}">Margarita</td>
+                        <td th:text="${item.pizzaVelkost.nazovVelkosti}">33cm</td>
+                        <td th:text="${item.pizzaVelkost.cena} + ' €'">5.00 €</td>
+                        <td>
+                            <span class="badge bg-light text-dark border" th:text="${item.mnozstvo}">1</span>
+                        </td>
+                        <td class="fw-bold" th:text="${#numbers.formatDecimal(item.pizzaVelkost.cena * item.mnozstvo, 1, 2)} + ' €'">10.00 €</td>
+                        <td>
+                            <a th:href="@{/cart/delete/{id}(id=${item.id})}" class="text-danger"><i class="bi bi-x-lg"></i></a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h4>Spolu: <span class="text-primary" th:text="${totalPrice} + ' €'">0.00 €</span></h4>
+                        <hr>
+
+                        <form th:action="@{/checkout}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Adresa doručenia</label>
+                                <textarea name="adresa" class="form-control" rows="2" required placeholder="Ulica, Číslo, Mesto"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Poznámka pre kuchyňu</label>
+                                <input type="text" name="poznamka" class="form-control" placeholder="Napr. bez cibule">
+                            </div>
+
+                            <button type="submit" class="btn btn-success w-100 btn-lg">Objednať záväzne</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <title th:text="${title}">Pizzeria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4" th:fragment="header">
+    <div class="container">
+        <a class="navbar-brand" href="/">🍕 Pizza Nitra</a>
+
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Menu</a></li>
+
+                <li class="nav-item" sec:authorize="hasRole('ZAKAZNIK')">
+                    <a class="nav-link" href="/my-orders">Moje Objednávky</a>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasRole('KUCHAR')">
+                    <a class="nav-link text-warning" href="/kitchen">Kuchyňa</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('KURIER')">
+                    <a class="nav-link text-warning" href="/delivery">Kuriér</a>
+                </li>
+
+                <li class="nav-item dropdown" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link dropdown-toggle text-danger" href="#" data-bs-toggle="dropdown">Admin</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/admin/pizzas">Pizze</a></li>
+                        <li><a class="dropdown-item" href="/admin/ingredients">Ingrediencie</a></li>
+                        <li><a class="dropdown-item" href="/admin/tags">Tagy</a></li>
+                        <li><a class="dropdown-item" href="/admin/users">Používatelia</a></li>
+                        <li><a class="dropdown-item" href="/admin/orders">Všetky objednávky</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="d-flex">
+                <div sec:authorize="isAuthenticated()" class="text-white me-3">
+                    <a href="/profile" class="text-white text-decoration-none">
+                        <i class="bi bi-person-circle"></i> <span sec:authentication="name">User</span>
+                    </a>
+                </div>
+                <div sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-sm btn-outline-light">Odhlásiť</button>
+                    </form>
+                </div>
+                <div sec:authorize="!isAuthenticated()">
+                    <a href="/login" class="btn btn-sm btn-outline-light me-2">Prihlásiť</a>
+                    <a href="/registration" class="btn btn-sm btn-warning">Registrácia</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div th:fragment="footer" class="container mt-5">
+    <footer class="py-3 my-4 border-top text-center text-muted">
+        &copy; 2024 Pizzeria Nitra UKF
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+</body>
+</html>

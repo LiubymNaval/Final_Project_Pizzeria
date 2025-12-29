@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Všetky objednávky')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-4">
+    <h2>Prehľad všetkých objednávok</h2>
+    <table class="table table-hover table-sm">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Dátum</th>
+            <th>Zákazník</th>
+            <th>Adresa</th>
+            <th>Cena</th>
+            <th>Stav</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="o : ${orders}">
+            <td th:text="${o.id}"></td>
+            <td th:text="${#temporals.format(o.createdAt, 'dd.MM HH:mm')}"></td>
+            <td th:text="${o.pouzivatel.email}"></td>
+            <td th:text="${o.adresa}"></td>
+            <td th:text="${o.celkovaCena} + '€'"></td>
+            <td>
+                    <span th:class="'badge ' +
+                        (${o.stav.name() == 'DORUCENA'} ? 'bg-success' :
+                        (${o.stav.name() == 'ZRUSENA'} ? 'bg-danger' : 'bg-warning'))"
+                          th:text="${o.stav}">
+                    </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

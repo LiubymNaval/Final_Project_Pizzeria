@@ -48,6 +48,8 @@ public class AdminController {
     @GetMapping("/pizzas/add")
     public String showAddPizzaForm(Model model) {
         model.addAttribute("pizza", new Pizza());
+        model.addAttribute("allTags", tagService.getAllTags());
+        model.addAttribute("allIngredients", ingredienciaService.getAll());
         return "admin/pizza-form";
     }
 
@@ -65,6 +67,8 @@ public class AdminController {
     @GetMapping("/pizzas/edit/{id}")
     public String showEditPizzaForm(@PathVariable Long id, Model model) {
         model.addAttribute("pizza", pizzaService.getPizzaById(id));
+        model.addAttribute("allTags", tagService.getAllTags());
+        model.addAttribute("allIngredients", ingredienciaService.getAll());
         return "admin/pizza-form";
     }
 

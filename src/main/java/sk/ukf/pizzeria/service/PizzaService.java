@@ -3,6 +3,7 @@ package sk.ukf.pizzeria.service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.ukf.pizzeria.entity.Pizza;
 import sk.ukf.pizzeria.entity.PizzaVelkost;
+import sk.ukf.pizzeria.exception.ObjectNotFoundException;
 import sk.ukf.pizzeria.repository.PizzaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,29 +27,37 @@ public class PizzaService {
 
     // Vyhľadávanie pízz (Searchbar)
     public List<Pizza> searchPizzas(String query) {
-        return pizzaRepository.findByNazovContainingIgnoreCaseOrPopisContainingIgnoreCase(query, query);
+        if (query == null || query.trim().isEmpty()) {
+            return getAllActivePizzas();
+        }
+        return pizzaRepository.searchByAllCriteria(query.trim());
     }
 
     @Transactional
     public void savePizzaWithSizes(Pizza pizza, BigDecimal cenaMala, BigDecimal cenaStredna, BigDecimal cenaVelka) {
         Pizza savedPizza = pizzaRepository.save(pizza);
-        pizzaVelkostRepository.deleteAllByPizza(savedPizza);
-        createSize(savedPizza, "33cm", cenaMala);
-        createSize(savedPizza, "40cm", cenaStredna);
-        createSize(savedPizza, "50cm", cenaVelka);
+        List<PizzaVelkost> existingSizes = pizzaVelkostRepository.findAllByPizza(savedPizza);
+
+        updateOrCreateSize(savedPizza, existingSizes, "33cm", cenaMala);
+        updateOrCreateSize(savedPizza, existingSizes, "40cm", cenaStredna);
+        updateOrCreateSize(savedPizza, existingSizes, "50cm", cenaVelka);
     }
 
-    private void createSize(Pizza pizza, String name, BigDecimal price) {
-        PizzaVelkost pv = new PizzaVelkost();
-        pv.setPizza(pizza);
-        pv.setNazovVelkosti(name);
-        pv.setCena(price);
-        pizzaVelkostRepository.save(pv);
+    private void updateOrCreateSize(Pizza pizza, List<PizzaVelkost> existingSizes, String name, BigDecimal price) {
+        PizzaVelkost size = existingSizes.stream()
+                .filter(s -> s.getNazovVelkosti().equals(name))
+                .findFirst()
+                .orElse(new PizzaVelkost());
+
+        size.setPizza(pizza);
+        size.setNazovVelkosti(name);
+        size.setCena(price);
+        pizzaVelkostRepository.save(size);
     }
 
     public Pizza getPizzaById(Long id) {
         return pizzaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pizza s ID " + id + " nebola nájdená"));
+                .orElseThrow(() -> new ObjectNotFoundException("Pizza", id));
     }
 
     @Transactional
@@ -58,5 +67,10 @@ public class PizzaService {
 
     public List<Pizza> getAllPizzas() {
         return pizzaRepository.findAll();
+    }
+
+    public Pizza getPizzaBySlug(String slug) {
+        return pizzaRepository.findBySlug(slug)
+                .orElseThrow(() -> new ObjectNotFoundException("Pizza so slugom", slug));
     }
 }

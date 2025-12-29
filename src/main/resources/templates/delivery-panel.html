@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Kuriér')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-4">
+    <h1>🛵 Kuriér Panel</h1>
+
+    <div class="row mt-3">
+        <div class="col-md-6" th:each="order : ${orders}">
+            <div class="card mb-3 border-info">
+                <div class="card-header bg-info text-white d-flex justify-content-between">
+                    <span>Objednávka #<span th:text="${order.id}"></span></span>
+                    <strong><span th:text="${order.celkovaCena}"></span> €</strong>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Adresa:</h5>
+                    <p class="card-text fs-5" th:text="${order.adresa}">Hlavná 12, Nitra</p>
+
+                    <p><strong>Telefón:</strong> <span th:text="${order.pouzivatel.telefon}">0900...</span></p>
+                    <p th:if="${order.poznamka}"><em>Poznámka: <span th:text="${order.poznamka}"></span></em></p>
+
+                    <hr>
+                    <form th:action="@{/delivery/order/{id}/status(id=${order.id})}" method="post">
+                        <input type="hidden" name="status" value="DORUCENA">
+                        <button type="submit" class="btn btn-success w-100 btn-lg">
+                            <i class="bi bi-check-circle"></i> Doručené
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}" class="text-center mt-5">
+        <h4>Žiadne objednávky na doručenie. Oddychujte! ☕</h4>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

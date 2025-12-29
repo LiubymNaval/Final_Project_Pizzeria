@@ -2,6 +2,7 @@ package sk.ukf.pizzeria.entity;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -10,6 +11,9 @@ public class Pizza extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToMany(mappedBy = "pizza", cascade = CascadeType.ALL)
+    private List<PizzaVelkost> velkosti;
 
     private String nazov;
 
@@ -68,5 +72,13 @@ public class Pizza extends BaseEntity{
 
     public void setTagy(Set<Tag> tagy) {
         this.tagy = tagy;
+    }
+
+    public List<PizzaVelkost> getVelkosti() {
+        return velkosti;
+    }
+
+    public void setVelkosti(List<PizzaVelkost> velkosti) {
+        this.velkosti = velkosti;
     }
 }

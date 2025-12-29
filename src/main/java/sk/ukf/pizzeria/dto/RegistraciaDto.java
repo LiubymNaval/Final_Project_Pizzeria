@@ -13,6 +13,8 @@ public class RegistraciaDto {
     @Email(message = "Zadajte platný email")
     private String email;
 
+    private String telefon;
+
     @Size(min = 8, message = "Heslo musí mať aspoň 8 znakov")
     private String heslo;
 
@@ -46,5 +48,13 @@ public class RegistraciaDto {
 
     public void setHeslo(String heslo) {
         this.heslo = heslo;
+    }
+
+    public String getTelefon() {
+        return telefon;
+    }
+
+    public void setTelefon(String telefon) {
+        this.telefon = telefon;
     }
 }

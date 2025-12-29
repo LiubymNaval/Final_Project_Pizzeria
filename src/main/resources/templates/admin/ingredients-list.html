@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Správa ingrediencií')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">Pridať ingredienciu</div>
+                <div class="card-body">
+                    <form th:action="@{/admin/ingredients/add}" method="post">
+                        <div class="mb-3">
+                            <label>Názov</label>
+                            <input type="text" name="nazov" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Uložiť</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h3>Zoznam ingrediencií</h3>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Názov</th>
+                    <th>Akcia</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ing : ${ingredients}">
+                    <td th:text="${ing.id}">1</td>
+                    <td th:text="${ing.nazov}">Syr</td>
+                    <td>
+                        <form th:action="@{/admin/ingredients/delete/{id}(id=${ing.id})}" method="post">
+                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

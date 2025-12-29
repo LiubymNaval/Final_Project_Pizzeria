@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Správa tagov')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">Pridať Tag</div>
+                <div class="card-body">
+                    <form th:action="@{/admin/tags/add}" method="post" th:object="${newTag}">
+                        <div class="mb-3">
+                            <label>Názov tagu</label>
+                            <input type="text" th:field="*{nazov}" class="form-control" placeholder="napr. Pikantné" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Pridať</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h3>Tagy</h3>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Názov</th>
+                    <th>Akcie</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tag : ${tags}">
+                    <td th:text="${tag.id}"></td>
+                    <td><span class="badge bg-secondary" th:text="${tag.nazov}">Tag</span></td>
+                    <td>
+                        <a th:href="@{/admin/tags/edit/{id}(id=${tag.id})}" class="btn btn-sm btn-warning">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form th:action="@{/admin/tags/delete/{id}(id=${tag.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

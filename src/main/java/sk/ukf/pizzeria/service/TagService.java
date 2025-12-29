@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.ukf.pizzeria.entity.Tag;
+import sk.ukf.pizzeria.exception.ObjectNotFoundException;
 import sk.ukf.pizzeria.repository.TagRepository;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class TagService {
 
     public Tag getTagById(Long id) {
         return tagRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tag s ID " + id + " nebol nájdený."));
+                .orElseThrow(() -> new ObjectNotFoundException("Tag", id));
     }
 
     public Optional<Tag> getTagByName(String nazov) {

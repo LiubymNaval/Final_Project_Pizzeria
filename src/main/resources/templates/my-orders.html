@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Moje Objednávky')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: header}"></nav>
+
+<div class="container mt-4">
+    <h2>História objednávok</h2>
+
+    <div th:if="${orders.isEmpty()}" class="alert alert-info">
+        Zatiaľ nemáte žiadne objednávky. <a href="/">Vyberte si pizzu!</a>
+    </div>
+
+    <div class="accordion mt-3" id="ordersAccordion">
+        <div class="accordion-item" th:each="order : ${orders}">
+            <h2 class="accordion-header" th:id="'heading'+${order.id}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                        th:data-bs-target="'#collapse'+${order.id}">
+                    <span class="me-3 fw-bold">#<span th:text="${order.id}"></span></span>
+                    <span class="me-3" th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">Date</span>
+                    <span class="badge bg-primary me-auto" th:text="${order.stav}">STAV</span>
+                    <span class="fw-bold text-success" th:text="${order.celkovaCena} + ' €'">20 €</span>
+                </button>
+            </h2>
+            <div th:id="'collapse'+${order.id}" class="accordion-collapse collapse" data-bs-parent="#ordersAccordion">
+                <div class="accordion-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" th:each="item : ${order.polozky}">
+                            <div class="d-flex justify-content-between">
+                                <span><strong th:text="${item.mnozstvo} + 'x'">1x</strong> <span th:text="${item.archivnyNazov}">Pizza</span></span>
+                                <span th:text="${item.archivnaCena * item.mnozstvo} + ' €'">10 €</span>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="mt-3 text-end" th:if="${order.stav.name() == 'CAKAJUCA'}">
+                        <form th:action="@{/my-orders/cancel/{id}(id=${order.id})}" method="post" onsubmit="return confirm('Zrušiť objednávku?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Zrušiť objednávku</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

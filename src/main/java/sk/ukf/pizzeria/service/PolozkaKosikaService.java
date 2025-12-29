@@ -4,16 +4,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sk.ukf.pizzeria.entity.PolozkaKosika;
 import sk.ukf.pizzeria.entity.Pouzivatel;
+import sk.ukf.pizzeria.exception.ObjectNotFoundException;
+import sk.ukf.pizzeria.repository.PizzaVelkostRepository;
 import sk.ukf.pizzeria.repository.PolozkaKosikaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PolozkaKosikaService {
+
     @Autowired
     private PolozkaKosikaRepository polozkaKosikaRepository;
 
+    @Autowired
+    private PizzaVelkostRepository pizzaVelkostRepository;
+
     public List<PolozkaKosika> getCartItems(Pouzivatel user) {
         return polozkaKosikaRepository.findAllByPouzivatel(user);
+    }
+
+    public void addItemToCart(Pouzivatel user, Long pizzaId, Long velkostId, Integer mnozstvo) {
+
+        Optional<PolozkaKosika> existingItem = polozkaKosikaRepository
+                .findByPouzivatelAndPizzaVelkost_Id(user, velkostId);
+
+        if (existingItem.isPresent()) {
+            PolozkaKosika item = existingItem.get();
+            item.setMnozstvo(item.getMnozstvo() + mnozstvo);
+            polozkaKosikaRepository.save(item);
+        } else {
+            PolozkaKosika newItem = new PolozkaKosika();
+            newItem.setPouzivatel(user);
+            newItem.setMnozstvo(mnozstvo);
+
+            newItem.setPizzaVelkost(pizzaVelkostRepository.findById(velkostId)
+                    .orElseThrow(() -> new ObjectNotFoundException("PizzaVelkost", velkostId)));
+
+            polozkaKosikaRepository.save(newItem);
+        }
+    }
+
+    public void removeItem(Long id) {
+        polozkaKosikaRepository.deleteById(id);
+    }
+
+    public void clearCart(Pouzivatel user) {
+        List<PolozkaKosika> items = getCartItems(user);
+        polozkaKosikaRepository.deleteAll(items);
     }
 }
