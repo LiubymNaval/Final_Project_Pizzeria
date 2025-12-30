@@ -17,6 +17,14 @@ public class Objednavka extends BaseEntity{
     @JoinColumn(name = "Pouzivatel_ID")
     private Pouzivatel pouzivatel;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kuchar_id")
+    private Pouzivatel kuchar;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "kurier_id")
+    private Pouzivatel kurier;
+
     @Enumerated(EnumType.STRING)
     private StavObjednavky stav; // "čakajúca", "pripravuje sa", "doručená"
 
@@ -49,6 +57,22 @@ public class Objednavka extends BaseEntity{
         this.pouzivatel = pouzivatel;
     }
 
+    public Pouzivatel getKurier() {
+        return kurier;
+    }
+
+    public void setKurier(Pouzivatel kurier) {
+        this.kurier = kurier;
+    }
+
+    public Pouzivatel getKuchar() {
+        return kuchar;
+    }
+
+    public void setKuchar(Pouzivatel kuchar) {
+        this.kuchar = kuchar;
+    }
+
     public StavObjednavky getStav() {
         return stav;
     }
@@ -77,4 +101,5 @@ public class Objednavka extends BaseEntity{
     }
     public String getPoznamka() { return poznamka; }
     public void setPoznamka(String poznamka) { this.poznamka = poznamka; }
+
 }

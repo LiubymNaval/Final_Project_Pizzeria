@@ -92,9 +92,18 @@ public class ObjednavkaService {
     }
 
     @Transactional
-    public void changeStatus(Long orderId, StavObjednavky newStatus) {
+    public void changeStatus(Long orderId, StavObjednavky newStatus, Pouzivatel worker) {
         Objednavka objednavka = objednavkaRepository.findById(orderId)
                 .orElseThrow(() -> new ObjectNotFoundException("Objednávka", orderId));
+
+
+        if (newStatus == StavObjednavky.PRIPRAVUJE_SA) {
+            objednavka.setKuchar(worker);
+        }
+
+        if (newStatus == StavObjednavky.DORUCUJE_SA) {
+            objednavka.setKurier(worker);
+        }
 
         objednavka.setStav(newStatus);
         objednavkaRepository.save(objednavka);

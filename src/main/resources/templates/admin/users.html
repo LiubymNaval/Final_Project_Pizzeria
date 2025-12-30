@@ -14,8 +14,7 @@
                 <th>Email</th>
                 <th>Meno</th>
                 <th>Rola</th>
-                <th>Zmeniť rolu</th>
-            </tr>
+                <th>Status</th> <th>Akcie</th> </tr>
             </thead>
             <tbody>
             <tr th:each="u : ${users}">
@@ -26,20 +25,40 @@
                     <span th:each="r : ${u.roly}" class="badge bg-secondary me-1" th:text="${r.nazov}">ROLE</span>
                 </td>
                 <td>
-                    <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" class="d-flex">
-                        <select name="roleName" class="form-select form-select-sm me-2">
-                            <option value="ROLE_ZAKAZNIK">Zákazník</option>
-                            <option value="ROLE_KUCHAR">Kuchár</option>
-                            <option value="ROLE_KURIER">Kuriér</option>
-                            <option value="ROLE_ADMIN">Admin</option>
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-outline-primary">Uložiť</button>
-                    </form>
+                    <span th:if="${u.aktivny}" class="badge bg-success">Aktívny</span>
+                    <span th:unless="${u.aktivny}" class="badge bg-danger">Deaktivovaný</span>
+                </td>
+                <td>
+                    <div class="d-flex gap-2">
+                        <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" class="d-flex">
+                            <select name="roleName" class="form-select form-select-sm me-1" style="width: auto;">
+                                <option value="ROLE_ZAKAZNIK">Zákazník</option>
+                                <option value="ROLE_KUCHAR">Kuchár</option>
+                                <option value="ROLE_KURIER">Kuriér</option>
+                                <option value="ROLE_ADMIN">Admin</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Uložiť</button>
+                        </form>
+
+                        <form th:action="@{/admin/users/{id}/toggle-status(id=${u.id})}" method="post">
+                            <button type="submit"
+                                    th:class="${u.aktivny} ? 'btn btn-sm btn-warning' : 'btn btn-sm btn-success'"
+                                    th:text="${u.aktivny} ? 'Deaktivovať' : 'Aktivovať'">
+                            </button>
+                        </form>
+
+                        <form th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post"
+                              onsubmit="return confirm('Naozaj chcete používateľa natrvalo odstrániť?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Zmazať</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
+
+    <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>
 </div>
 
 <div th:replace="~{fragments/layout :: footer}"></div>

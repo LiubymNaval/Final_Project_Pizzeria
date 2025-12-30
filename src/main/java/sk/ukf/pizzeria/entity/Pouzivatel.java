@@ -1,6 +1,7 @@
 package sk.ukf.pizzeria.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.util.Set;
 
@@ -11,13 +12,23 @@ public class Pouzivatel extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Meno nesmie byť prázdne")
+    @Size(min = 2, max = 50, message = "Meno musí mať 2 až 50 znakov")
     private String meno;
+
+    @NotBlank(message = "Priezvisko nesmie byť prázdne")
+    @Size(min = 2, max = 50, message = "Priezvisko musí mať 2 až 50 znakov")
     private String priezvisko;
 
+    @NotBlank(message = "Email nesmie byť prázdny")
+    @Email(message = "Zadajte platnú emailovú adresu")
     @Column(unique = true, nullable = false)
     private String email;
 
+    @NotBlank(message = "Heslo nesmie byť prázdne")
     private String heslo;
+
+    @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Telefónne číslo musí mať 9 až 15 číslic")
     private String telefon;
 
     @Column(name = "obrazok_url")

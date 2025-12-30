@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sk.ukf.pizzeria.entity.Ingrediencia;
 import sk.ukf.pizzeria.entity.Pizza;
 import sk.ukf.pizzeria.entity.Tag;
@@ -30,6 +31,22 @@ public class AdminController {
     @PostMapping("/users/{id}/role")
     public String changeRole(@PathVariable Long id, @RequestParam String roleName) {
         pouzivatelService.changeUserRole(id, roleName);
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/users/{id}/toggle-status")
+    public String toggleUserStatus(@PathVariable Long id) {
+        pouzivatelService.toggleUserStatus(id);
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/users/{id}/delete")
+    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            pouzivatelService.deleteUser(id);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Používateľa nemožno odstrániť, pretože má priradené objednávky. Skúste ho radšej deaktivovať.");
+        }
         return "redirect:/admin/users";
     }
 

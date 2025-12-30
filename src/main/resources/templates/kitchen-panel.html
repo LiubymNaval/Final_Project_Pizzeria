@@ -5,38 +5,58 @@
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between align-items-center">
         <h1>👨‍🍳 Kuchyňa</h1>
-        <div th:if="${hasNewOrders}" class="alert alert-warning animate-pulse">
-            🔔 Máte nové objednávky! <a href="/kitchen" class="alert-link">Obnoviť</a>
+        <div th:if="${hasNewOrders}" class="alert alert-warning mb-0 py-2">
+            🔔 Nové objednávky! <a href="/kitchen" class="alert-link">Obnoviť</a>
         </div>
     </div>
 
     <div class="row mt-3">
         <div class="col-md-4" th:each="order : ${orders}">
-            <div class="card mb-3 border-warning">
+            <div class="card mb-3 shadow-sm border-warning">
                 <div class="card-header bg-warning text-dark d-flex justify-content-between">
                     <span th:text="'#' + ${order.id}">#123</span>
                     <strong th:text="${#temporals.format(order.createdAt, 'HH:mm')}">12:30</strong>
                 </div>
                 <div class="card-body">
+                    <p class="mb-2 small">
+                        <strong>Zákazník:</strong>
+                        <span th:text="${order.pouzivatel.meno} + ' ' + ${order.pouzivatel.priezvisko}"></span>
+                    </p>
+
                     <ul class="list-group list-group-flush mb-3">
-                        <li class="list-group-item" th:each="item : ${order.polozky}">
-                            <span class="fw-bold" th:text="${item.mnozstvo} + 'x'">1x</span>
-                            <span th:text="${item.archivnyNazov}">Pizza Margarita</span>
+                        <li class="list-group-item px-0" th:each="item : ${order.polozky}">
+                            <span class="fw-bold text-primary" th:text="${item.mnozstvo} + 'x'">1x</span>
+                            <span th:text="${item.archivnyNazov}">Pizza</span>
                         </li>
                     </ul>
-                    <p class="mb-1"><strong>Poznámka:</strong> <span th:text="${order.poznamka}">...</span></p>
+
+                    <p class="mb-1 small text-muted"><strong>Poznámka:</strong></p>
+                    <p class="small" th:text="${order.poznamka ?: 'Bez poznámky'}"></p>
+
+                    <div th:if="${order.kuchar != null}" class="alert alert-info py-2 mb-3">
+                        <div class="d-flex align-items-center mb-1">
+                            <small class="fw-bold text-uppercase" style="font-size: 0.7rem;">Pripravuje:</small>
+                        </div>
+                        <div class="fw-bold" th:text="${order.kuchar.meno} + ' ' + ${order.kuchar.priezvisko}"></div>
+                        <div class="small">
+                            <i class="bi bi-telephone"></i> <span th:text="${order.kuchar.telefon}"></span>
+                        </div>
+                    </div>
+
                     <hr>
                     <div class="d-grid gap-2">
-                        <form th:action="@{/kitchen/order/{id}/status(id=${order.id})}" method="post">
+                        <form th:if="${order.stav.name() == 'CAKAJUCA'}"
+                              th:action="@{/kitchen/order/{id}/status(id=${order.id})}" method="post">
                             <input type="hidden" name="status" value="PRIPRAVUJE_SA">
-                            <button th:if="${order.stav.name() == 'CAKAJUCA'}" type="submit" class="btn btn-primary w-100">Začať prípravu</button>
+                            <button type="submit" class="btn btn-primary w-100">Začať prípravu</button>
                         </form>
 
-                        <form th:action="@{/kitchen/order/{id}/status(id=${order.id})}" method="post">
+                        <form th:if="${order.stav.name() == 'PRIPRAVUJE_SA'}"
+                              th:action="@{/kitchen/order/{id}/status(id=${order.id})}" method="post">
                             <input type="hidden" name="status" value="PRIPRAVENA">
-                            <button th:if="${order.stav.name() == 'PRIPRAVUJE_SA'}" type="submit" class="btn btn-success w-100">Hotovo -> Kuriér</button>
+                            <button type="submit" class="btn btn-success w-100">Hotovo -> Kuriér</button>
                         </form>
                     </div>
                 </div>
@@ -45,14 +65,12 @@
     </div>
 
     <div th:if="${#lists.isEmpty(orders)}" class="text-center mt-5 text-muted">
-        <h4>Žiadne aktívne objednávky</h4>
+        <h4>Aktuálne žiadne objednávky na prípravu</h4>
     </div>
 </div>
 
 <script>
-    setTimeout(function(){
-        window.location.reload(1);
-    }, 30000);
+    setTimeout(function(){ window.location.reload(); }, 30000);
 </script>
 
 <div th:replace="~{fragments/layout :: footer}"></div>

@@ -1,7 +1,7 @@
 package sk.ukf.pizzeria.entity;
 
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.*;
 import java.util.List;
 import java.util.Set;
 
@@ -12,14 +12,20 @@ public class Pizza extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty(message = "Pizza musí mať definovanú aspoň jednu veľkosť a cenu")
     @OneToMany(mappedBy = "pizza", cascade = CascadeType.ALL)
     private List<PizzaVelkost> velkosti;
 
+    @NotBlank(message = "Názov pizze nesmie byť prázdny")
+    @Size(min = 3, max = 100, message = "Názov pizze musí mať 3 až 100 znakov")
     private String nazov;
 
+    @NotBlank(message = "Popis pizze je povinný")
+    @Size(max = 1000, message = "Popis je príliš dlhý (max 1000 znakov)")
     @Column(columnDefinition = "TEXT")
     private String popis;
 
+    @NotBlank(message = "Slug je povinný pre URL adresu")
     private String slug;
 
     @Column(name = "obrazok_url")

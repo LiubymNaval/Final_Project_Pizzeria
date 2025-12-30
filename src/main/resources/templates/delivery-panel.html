@@ -9,20 +9,61 @@
 
     <div class="row mt-3">
         <div class="col-md-6" th:each="order : ${orders}">
-            <div class="card mb-3 border-info">
+            <div class="card mb-3 border-info shadow-sm">
                 <div class="card-header bg-info text-white d-flex justify-content-between">
                     <span>Objednávka #<span th:text="${order.id}"></span></span>
                     <strong><span th:text="${order.celkovaCena}"></span> €</strong>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Adresa:</h5>
-                    <p class="card-text fs-5" th:text="${order.adresa}">Hlavná 12, Nitra</p>
+                    <h5 class="card-title text-muted small text-uppercase">Adresa doručenia:</h5>
+                    <p class="card-text fs-5 fw-bold" th:text="${order.adresa}">Hlavná 12, Nitra</p>
 
-                    <p><strong>Telefón:</strong> <span th:text="${order.pouzivatel.telefon}">0900...</span></p>
+                    <div class="mb-3">
+                        <p class="mb-1">
+                            <strong>Zákazník:</strong>
+                            <span th:text="${order.pouzivatel.meno} + ' ' + ${order.pouzivatel.priezvisko}">Meno Priezvisko</span>
+                        </p>
+                        <p class="mb-1">
+                            <strong>Telefón:</strong>
+                            <a th:href="'tel:' + ${order.pouzivatel.telefon}" th:text="${order.pouzivatel.telefon}" class="text-decoration-none">0900...</a>
+                        </p>
+                    </div>
+
+                    <h6 class="text-muted small text-uppercase">Obsah objednávky:</h6>
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item px-0" th:each="item : ${order.polozky}">
+                            <span class="fw-bold text-primary" th:text="${item.mnozstvo} + 'x'">1x</span>
+                            <span th:text="${item.archivnyNazov}">Pizza</span>
+                        </li>
+                    </ul>
+
                     <p th:if="${order.poznamka}"><em>Poznámka: <span th:text="${order.poznamka}"></span></em></p>
 
+                    <div th:if="${order.kurier != null}" class="alert alert-secondary py-2 mb-3">
+                        <small class="fw-bold text-uppercase d-block mb-1" style="font-size: 0.75rem; letter-spacing: 0.5px;">Priradený kuriér:</small>
+                        <div class="d-flex align-items-center">
+                            <span class="fs-4 me-2">🛵</span>
+                            <div>
+                                <div class="fw-bold" th:text="${order.kurier.meno} + ' ' + ${order.kurier.priezvisko}">Meno Priezvisko</div>
+                                <div class="small">
+                                    <i class="bi bi-phone"></i> <span th:text="${order.kurier.telefon}">0900...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <hr>
-                    <form th:action="@{/delivery/order/{id}/status(id=${order.id})}" method="post">
+
+                    <form th:if="${order.stav.name() == 'PRIPRAVENA'}"
+                          th:action="@{/delivery/order/{id}/status(id=${order.id})}" method="post">
+                        <input type="hidden" name="status" value="DORUCUJE_SA">
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">
+                            <i class="bi bi-bicycle"></i> Prevziať (Na cestu)
+                        </button>
+                    </form>
+
+                    <form th:if="${order.stav.name() == 'DORUCUJE_SA'}"
+                          th:action="@{/delivery/order/{id}/status(id=${order.id})}" method="post">
                         <input type="hidden" name="status" value="DORUCENA">
                         <button type="submit" class="btn btn-success w-100 btn-lg">
                             <i class="bi bi-check-circle"></i> Doručené
@@ -38,6 +79,9 @@
     </div>
 </div>
 
+<script>
+    setTimeout(function(){ window.location.reload(); }, 30000);
+</script>
 <div th:replace="~{fragments/layout :: footer}"></div>
 </body>
 </html>

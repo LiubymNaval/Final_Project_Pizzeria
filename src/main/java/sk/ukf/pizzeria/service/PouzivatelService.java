@@ -86,4 +86,12 @@ public class PouzivatelService {
         user.getRoly().add(newRola);
         pouzivatelRepository.save(user);
     }
+    @Transactional
+    public void toggleUserStatus(Long userId) {
+        Pouzivatel user = pouzivatelRepository.findById(userId)
+                .orElseThrow(() -> new ObjectNotFoundException("Používateľ", userId));
+        
+        user.setAktivny(!user.isAktivny());
+        pouzivatelRepository.save(user);
+    }
 }

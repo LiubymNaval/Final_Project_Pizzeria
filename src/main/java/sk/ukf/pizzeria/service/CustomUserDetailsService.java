@@ -31,6 +31,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new User(
                 pouzivatel.getEmail(),
                 pouzivatel.getHeslo(),
+                pouzivatel.isAktivny(),
+                true,
+                true,
+                true,
                 authorities
         );
     }

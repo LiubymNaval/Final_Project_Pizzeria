@@ -5,17 +5,23 @@ import jakarta.validation.constraints.*;
 public class RegistraciaDto {
 
     @NotBlank(message = "Meno nesmie byť prázdne")
+    @Size(min = 2, max = 50, message = "Meno musí mať 2 až 50 znakov")
     private String meno;
 
     @NotBlank(message = "Priezvisko nesmie byť prázdne")
+    @Size(min = 2, max = 50, message = "Priezvisko musí mať 2 až 50 znakov")
     private String priezvisko;
 
-    @Email(message = "Zadajte platný email")
+    @NotBlank(message = "Email nesmie byť prázdny")
+    @Email(message = "Zadajte platnú emailovú adresu")
     private String email;
 
+    @NotBlank(message = "Telefónne číslo je povinné")
+    @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Telefónne číslo musí mať 9 až 15 číslic")
     private String telefon;
 
-    @Size(min = 8, message = "Heslo musí mať aspoň 8 znakov")
+    @NotBlank(message = "Heslo nesmie byť prázdne")
+    @Size(min = 8, max = 25, message = "Heslo musí mať 8 až 25 znakov")
     private String heslo;
 
     public String getMeno() {

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import sk.ukf.pizzeria.entity.PolozkaKosika;
 import sk.ukf.pizzeria.entity.Pouzivatel;
 import sk.ukf.pizzeria.model.StavObjednavky;
+import sk.ukf.pizzeria.repository.PouzivatelRepository;
 import sk.ukf.pizzeria.service.ObjednavkaService;
 import sk.ukf.pizzeria.service.PolozkaKosikaService;
 import sk.ukf.pizzeria.service.PouzivatelService;
@@ -28,6 +29,9 @@ public class ObjednavkaController {
 
     @Autowired
     private PouzivatelService pouzivatelService;
+
+    @Autowired
+    private PouzivatelRepository pouzivatelRepository;
 
     @PostMapping("/checkout")
     public String processOrder(@RequestParam String adresa,
@@ -54,14 +58,20 @@ public class ObjednavkaController {
     }
 
     @PostMapping("/kitchen/order/{id}/status")
-    public String updateStatus(@PathVariable Long id, @RequestParam StavObjednavky status) {
-        objednavkaService.changeStatus(id, status);
+    public String updateStatus(@PathVariable Long id, @RequestParam StavObjednavky status, Principal principal) {
+        Pouzivatel kuchar = pouzivatelRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Používateľ nenájdený"));
+
+        objednavkaService.changeStatus(id, status, kuchar);
         return "redirect:/kitchen";
     }
 
     @PostMapping("/delivery/order/{id}/status")
-    public String updateDeliveryStatus(@PathVariable Long id, @RequestParam StavObjednavky status) {
-        objednavkaService.changeStatus(id, status);
+    public String updateDeliveryStatus(@PathVariable Long id, @RequestParam StavObjednavky status, Principal principal) {
+        Pouzivatel kurier = pouzivatelRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Používateľ nenájdený"));
+
+        objednavkaService.changeStatus(id, status, kurier);
         return "redirect:/delivery";
     }
 
