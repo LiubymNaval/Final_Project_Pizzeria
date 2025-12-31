@@ -12,6 +12,12 @@ import sk.ukf.pizzeria.repository.PizzaVelkostRepository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.UUID;
+import java.io.InputStream;
+
 @Service
 public class PizzaService {
 
@@ -35,6 +41,18 @@ public class PizzaService {
 
     @Transactional
     public void savePizzaWithSizes(Pizza pizza, BigDecimal cenaMala, BigDecimal cenaStredna, BigDecimal cenaVelka) {
+        if (pizza.getId() == null && pizzaRepository.existsByNazov(pizza.getNazov())) {
+            throw new IllegalArgumentException("Pizza s týmto názvom už existuje");
+        }
+
+        if (cenaMala == null || cenaStredna == null || cenaVelka == null) {
+            throw new IllegalArgumentException("Všetky ceny musia byť zadané");
+        }
+
+        if (cenaVelka.compareTo(cenaMala) <= 0) {
+            throw new IllegalArgumentException("Cena veľkej pizze musí byť vyššia ako malej");
+        }
+
         Pizza savedPizza = pizzaRepository.save(pizza);
         List<PizzaVelkost> existingSizes = pizzaVelkostRepository.findAllByPizza(savedPizza);
 
@@ -73,4 +91,27 @@ public class PizzaService {
         return pizzaRepository.findBySlug(slug)
                 .orElseThrow(() -> new ObjectNotFoundException("Pizza so slugom", slug));
     }
+
+    public String saveImage(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        String uploadDir = "src/main/resources/static/uploads/";
+
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+
+        try (InputStream inputStream = file.getInputStream()) {
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return "/uploads/" + fileName;
+    }
+
 }

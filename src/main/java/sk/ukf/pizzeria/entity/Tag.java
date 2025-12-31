@@ -1,6 +1,7 @@
 package sk.ukf.pizzeria.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "Tag")
@@ -9,6 +10,8 @@ public class Tag extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Názov tagu je povinný")
+    @Size(min = 2, max = 30, message = "Tag musí mať 2 až 30 znakov")
     private String nazov;
 
     public Tag() {}

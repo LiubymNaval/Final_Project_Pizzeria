@@ -1,7 +1,7 @@
 package sk.ukf.pizzeria.entity;
 
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -11,15 +11,20 @@ public class PolozkaObjednavky extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Položka musí byť priradená k objednávke")
     @ManyToOne
     @JoinColumn(name = "Objednavka_ID")
     private Objednavka objednavka;
 
+    @Min(value = 1, message = "Množstvo musí byť aspoň 1")
     private int mnozstvo;
 
+    @NotBlank(message = "Archívny názov nesmie byť prázdny")
     @Column(name = "archivny_nazov")
     private String archivnyNazov;
 
+    @NotNull(message = "Archívna cena musí byť zadaná")
+    @DecimalMin(value = "0.00", message = "Archívna cena nemôže byť záporná")
     @Column(name = "archivna_cena", precision = 10, scale = 2)
     private BigDecimal archivnaCena;
 

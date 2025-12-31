@@ -34,7 +34,19 @@ public class AuthController {
         if (result.hasErrors()) {
             return "registration";
         }
-        pouzivatelService.registerUser(dto);
+        // 1. Проверка аннотаций самого DTO (@NotBlank, @Email, @Pattern и т.д.)
+        // Если пользователь ввел короткий пароль или кривой телефон - остановимся тут.
+        if (result.hasErrors()) {
+            return "registration";
+        }
+
+        try {
+            pouzivatelService.registerUser(dto);
+
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("email", "error.user", e.getMessage());
+            return "registration";
+        }
         return "redirect:/login?success";
     }
 }

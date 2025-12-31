@@ -31,6 +31,9 @@ public class TagService {
 
     @Transactional
     public void saveTag(Tag tag) {
+        if (tagRepository.existsByNazov(tag.getNazov())) {
+            throw new IllegalArgumentException("Tag s názvom '" + tag.getNazov() + "' už existuje");
+        }
         tagRepository.save(tag);
     }
 

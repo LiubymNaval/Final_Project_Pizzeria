@@ -1,6 +1,7 @@
 package sk.ukf.pizzeria.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "Rola")
@@ -9,6 +10,8 @@ public class Rola extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Názov roly je povinný")
+    @Pattern(regexp = "^ROLE_[A-Z]+$", message = "Rola musí začínať na 'ROLE_' a obsahovať len veľké písmená")
     private String nazov; // ROLE_ADMIN, ROLE_ZAKAZNIK...
 
     public Rola() {}

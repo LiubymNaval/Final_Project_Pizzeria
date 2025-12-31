@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface PizzaRepository extends JpaRepository<Pizza, Long> {
+    boolean existsByNazov(String nazov);
 
     @Query("SELECT DISTINCT p FROM Pizza p " +
             "LEFT JOIN p.tagy t " +

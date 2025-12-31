@@ -18,6 +18,8 @@ public class ProfilDto {
     @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Telefónne číslo musí mať 9 až 15 číslic")
     private String telefon;
 
+    private String obrazokUrl;
+
     public ProfilDto() {}
 
     public String getMeno() { return meno; }
@@ -29,4 +31,12 @@ public class ProfilDto {
     public void setPriezvisko(String priezvisko) { this.priezvisko = priezvisko; }
     public void setEmail(String email) { this.email = email; }
     public void setTelefon(String telefon) { this.telefon = telefon; }
+
+    public String getObrazokUrl() {
+        return obrazokUrl;
+    }
+
+    public void setObrazokUrl(String obrazokUrl) {
+        this.obrazokUrl = obrazokUrl;
+    }
 }

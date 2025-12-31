@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sk.ukf.pizzeria.repository.PolozkaKosikaRepository;
-import sk.ukf.pizzeria.repository.PouzivatelRepository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,6 +30,14 @@ public class ObjednavkaService {
     public Objednavka createOrder(Pouzivatel user, String adresa, String poznamka, List<PolozkaKosika> items) {
         if (items.isEmpty()) {
             throw new RuntimeException("Košík je prázdny!");
+        }
+
+        if (!user.isAktivny()) {
+            throw new IllegalStateException("Váš účet je deaktivovaný, nemôžete vytvárať objednávky");
+        }
+
+        if (adresa == null || adresa.trim().length() < 5) {
+            throw new IllegalArgumentException("Adresa doručenia je príliš krátka alebo chýba");
         }
 
         Objednavka objednavka = new Objednavka();
@@ -87,7 +94,7 @@ public class ObjednavkaService {
             objednavka.setStav(StavObjednavky.ZRUSENA);
             objednavkaRepository.save(objednavka);
         } else {
-            throw new IllegalStateException("Objednávku už nie je možné zrušiť, pretože sa pripravuje.");
+            throw new IllegalStateException("Objednávku už nie je možné zrušiť, pretože sa pripravuje");
         }
     }
 

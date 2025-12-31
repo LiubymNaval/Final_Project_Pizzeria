@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface IngredienciaRepository extends JpaRepository<Ingrediencia, Long> {
     Optional<Ingrediencia> findByNazov(String nazov);
+    boolean existsByNazov(String nazov);
 }

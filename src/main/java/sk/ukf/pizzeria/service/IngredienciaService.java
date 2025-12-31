@@ -24,6 +24,9 @@ public class IngredienciaService {
     }
 
     public void save(Ingrediencia ing) {
+        if (repository.existsByNazov(ing.getNazov())) {
+            throw new IllegalArgumentException("Ingrediencia '" + ing.getNazov() + "' už v zozname existuje");
+        }
         repository.save(ing);
     }
 

@@ -7,34 +7,53 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-4 text-center">
-            <img th:src="${user.obrazokUrl != null && user.obrazokUrl != '' ? user.obrazokUrl : 'https://via.placeholder.com/150'}"
+            <img th:src="${user.obrazokUrl != null && user.obrazokUrl != '' ? user.obrazokUrl : (fullUser != null && fullUser.obrazokUrl != '' ? fullUser.obrazokUrl : 'https://via.placeholder.com/150')}"
                  class="rounded-circle img-thumbnail mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+
             <h3 th:text="${user.meno + ' ' + user.priezvisko}">Janko Hraško</h3>
-            <span class="badge bg-info" th:each="rola : ${user.roly}" th:text="${rola.nazov}">ROLE</span>
+
+            <div th:if="${fullUser != null}">
+                <span class="badge bg-info me-1" th:each="rola : ${fullUser.roly}" th:text="${rola.nazov}">ROLE</span>
+            </div>
+            <div th:if="${fullUser == null && user instanceof T(sk.ukf.pizzeria.entity.Pouzivatel)}">
+                <span class="badge bg-info me-1" th:each="rola : ${user.roly}" th:text="${rola.nazov}">ROLE</span>
+            </div>
         </div>
 
         <div class="col-md-8">
-            <div th:if="${param.success}" class="alert alert-success">Zmeny boli úspešne uložené.</div>
+            <div th:if="${param.success}" class="alert alert-success">Zmeny boli úspešne uložené</div>
 
             <div class="card mb-4">
                 <div class="card-header">Upraviť údaje</div>
                 <div class="card-body">
-                    <form th:action="@{/profile/update}" method="post">
+                    <form th:action="@{/profile/update}" th:object="${user}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" th:field="*{email}">
+
+                        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                            <ul class="mb-0">
+                                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                            </ul>
+                        </div>
                         <div class="mb-3">
                             <label>Meno</label>
-                            <input type="text" name="meno" th:value="${user.meno}" class="form-control" required>
+                            <input type="text" th:field="*{meno}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('meno')} ? 'is-invalid'">
                         </div>
                         <div class="mb-3">
                             <label>Priezvisko</label>
-                            <input type="text" name="priezvisko" th:value="${user.priezvisko}" class="form-control" required>
+                            <input type="text" th:field="*{priezvisko}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('priezvisko')} ? 'is-invalid'">
                         </div>
                         <div class="mb-3">
                             <label>Telefón</label>
-                            <input type="text" name="telefon" th:value="${user.telefon}" class="form-control">
+                            <input type="text" th:field="*{telefon}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('telefon')} ? 'is-invalid'">
                         </div>
                         <div class="mb-3">
-                            <label>URL Avatara</label>
-                            <input type="text" name="obrazokUrl" th:value="${user.obrazokUrl}" class="form-control" placeholder="http://...">
+                            <label>Avatar</label>
+                            <input type="file" name="imageFile" class="form-control mb-2" accept="image/*">
+
+                            <input type="hidden" th:field="*{obrazokUrl}">
                         </div>
                         <button type="submit" class="btn btn-primary">Uložiť zmeny</button>
                     </form>
@@ -44,6 +63,8 @@
             <div class="card border-warning mb-4">
                 <div class="card-header bg-warning text-dark">Zmena hesla</div>
                 <div class="card-body">
+                    <div th:if="${passwordError}" class="text-danger mb-2" th:text="${passwordError}"></div>
+
                     <form th:action="@{/profile/change-password}" method="post">
                         <div class="input-group">
                             <input type="password" name="newPassword" class="form-control" placeholder="Nové heslo" required>

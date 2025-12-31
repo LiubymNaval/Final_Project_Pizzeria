@@ -1,5 +1,5 @@
 package sk.ukf.pizzeria.entity;
-
+import jakarta.validation.constraints.*;
 import jakarta.persistence.*;
 
 @Entity
@@ -9,14 +9,18 @@ public class PolozkaKosika extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Položka košíka musí patriť používateľovi")
     @ManyToOne
     @JoinColumn(name = "Pouzivatel_ID")
     private Pouzivatel pouzivatel;
 
+    @NotNull(message = "Položka košíka musí odkazovať na konkrétnu pizzu a veľkosť")
     @ManyToOne
     @JoinColumn(name = "Pizza_Velkost_ID")
     private PizzaVelkost pizzaVelkost;
 
+    @Min(value = 1, message = "Množstvo musí byť aspoň 1")
+    @Max(value = 50, message = "Maximálne množstvo jednej položky je 50 kusov")
     private int mnozstvo;
 
     public PolozkaKosika() {}

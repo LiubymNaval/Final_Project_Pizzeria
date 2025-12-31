@@ -26,6 +26,7 @@ public class Pouzivatel extends BaseEntity{
     private String email;
 
     @NotBlank(message = "Heslo nesmie byť prázdne")
+    @Size(min = 8, message = "Heslo musí mať aspoň 8 znakov")
     private String heslo;
 
     @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Telefónne číslo musí mať 9 až 15 číslic")

@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/pizza/**","/search/**", "/registration", "/login", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/error/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/cart/**", "/my-orders/**", "/profile/**").hasRole("ZAKAZNIK")
                         .requestMatchers("/kitchen/**", "/orders/manage/**").hasRole("KUCHAR")
                         .requestMatchers("/delivery/**").hasRole("KURIER")

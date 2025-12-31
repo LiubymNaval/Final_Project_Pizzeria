@@ -2,6 +2,7 @@ package sk.ukf.pizzeria.entity;
 
 import jakarta.persistence.*;
 import sk.ukf.pizzeria.model.StavObjednavky;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,6 +14,7 @@ public class Objednavka extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Objednávka musí byť priradená používateľovi")
     @ManyToOne
     @JoinColumn(name = "Pouzivatel_ID")
     private Pouzivatel pouzivatel;
@@ -25,17 +27,24 @@ public class Objednavka extends BaseEntity{
     @JoinColumn(name = "kurier_id")
     private Pouzivatel kurier;
 
+    @NotNull(message = "Stav objednávky musí byť určený")
     @Enumerated(EnumType.STRING)
     private StavObjednavky stav; // "čakajúca", "pripravuje sa", "doručená"
 
+    @NotNull(message = "Celková cena musí byť vypočítaná")
+    @DecimalMin(value = "0.00", message = "Cena nemôže byť záporná")
     @Column(name = "celkova_cena", precision = 10, scale = 2)
     private BigDecimal celkovaCena;
 
+    @NotBlank(message = "Adresa doručenia je povinná")
+    @Size(min = 3, max = 255, message = "Adresa musí mať 5 až 255 znakov")
     private String adresa;
 
+    @Size(max = 500, message = "Poznámka môže mať maximálne 500 znakov")
     @Column(columnDefinition = "TEXT")
     private String poznamka;
 
+    @NotEmpty(message = "Objednávka musí obsahovať aspoň jednu položku")
     @OneToMany(mappedBy = "objednavka", cascade = CascadeType.ALL)
     private java.util.List<PolozkaObjednavky> polozky;
 

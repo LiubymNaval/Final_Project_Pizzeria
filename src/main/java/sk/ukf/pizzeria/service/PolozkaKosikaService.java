@@ -26,11 +26,27 @@ public class PolozkaKosikaService {
 
     public void addItemToCart(Pouzivatel user, Long pizzaId, Long velkostId, Integer mnozstvo) {
 
+        if (mnozstvo == null || mnozstvo < 1) {
+            throw new IllegalArgumentException("Množstvo musí byť aspoň 1");
+        }
+
+        if (mnozstvo > 50) {
+            throw new IllegalArgumentException("Maximálne množstvo pre jeden prídavok je 50 kusov");
+        }
+
+        if (!user.isAktivny()) {
+            throw new IllegalStateException("Váš účet je zablokovaný");
+        }
+
         Optional<PolozkaKosika> existingItem = polozkaKosikaRepository
                 .findByPouzivatelAndPizzaVelkost_Id(user, velkostId);
 
         if (existingItem.isPresent()) {
             PolozkaKosika item = existingItem.get();
+            int noveMnozstvo = item.getMnozstvo() + mnozstvo;
+            if (noveMnozstvo > 100) {
+                throw new IllegalArgumentException("V košíku nemôžete mať viac ako 100 kusov z jednej pizze");
+            }
             item.setMnozstvo(item.getMnozstvo() + mnozstvo);
             polozkaKosikaRepository.save(item);
         } else {

@@ -12,6 +12,10 @@ import sk.ukf.pizzeria.service.*;
 
 import java.math.BigDecimal;
 
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.nio.file.*;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -74,7 +78,18 @@ public class AdminController {
     public String savePizza(@ModelAttribute Pizza pizza,
                             @RequestParam BigDecimal cenaMala,
                             @RequestParam BigDecimal cenaStredna,
-                            @RequestParam BigDecimal cenaVelka) {
+                            @RequestParam BigDecimal cenaVelka,
+                            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+
+        if (!imageFile.isEmpty()) {
+            String imagePath = pizzaService.saveImage(imageFile);
+            pizza.setObrazokUrl(imagePath);
+        } else {
+            if (pizza.getId() != null) {
+                Pizza existingPizza = pizzaService.getPizzaById(pizza.getId());
+                pizza.setObrazokUrl(existingPizza.getObrazokUrl());
+            }
+        }
 
         pizzaService.savePizzaWithSizes(pizza, cenaMala, cenaStredna, cenaVelka);
 

@@ -7,7 +7,7 @@
 <div class="container mt-5">
     <h2 th:text="${pizza.id == null ? 'Pridať novú pizzu' : 'Upraviť pizzu'}">Form</h2>
 
-    <form th:action="@{/admin/pizzas/save}" th:object="${pizza}" method="post" class="row g-3">
+    <form th:action="@{/admin/pizzas/save}" th:object="${pizza}" method="post" enctype="multipart/form-data" class="row g-3">
         <input type="hidden" th:field="*{id}">
 
         <div class="col-md-6">
@@ -26,8 +26,16 @@
         </div>
 
         <div class="col-md-12">
-            <label class="form-label">URL Obrázka</label>
-            <input type="text" th:field="*{obrazokUrl}" class="form-control">
+            <label class="form-label">Obrázok pizze</label>
+
+            <div th:if="${pizza.obrazokUrl}" class="mb-2">
+                <img th:src="@{${pizza.obrazokUrl}}" style="height: 100px; border-radius: 5px;" alt="Current Image">
+                <div class="text-muted small" th:text="${pizza.obrazokUrl}"></div>
+            </div>
+
+            <input type="file" name="imageFile" class="form-control" accept="image/*">
+
+            <input type="text" th:field="*{obrazokUrl}" class="form-control mt-1" placeholder="Alebo vložte URL manuálne">
         </div>
 
         <div class="col-12"><hr><h5>Cenník (Povinné)</h5></div>
