@@ -1,8 +1,10 @@
 package sk.ukf.pizzeria.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sk.ukf.pizzeria.entity.Ingrediencia;
@@ -15,6 +17,9 @@ import java.math.BigDecimal;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -68,37 +73,93 @@ public class AdminController {
 
     @GetMapping("/pizzas/add")
     public String showAddPizzaForm(Model model) {
-        model.addAttribute("pizza", new Pizza());
+        Pizza pizza = new Pizza();
+
+        if (model.containsAttribute("uploadedUrl")) {
+            pizza.setObrazokUrl((String) model.getAttribute("uploadedUrl"));
+        }
+
+        model.addAttribute("pizza", pizza);
         model.addAttribute("allTags", tagService.getAllTags());
         model.addAttribute("allIngredients", ingredienciaService.getAll());
         return "admin/pizza-form";
     }
 
     @PostMapping("/pizzas/save")
-    public String savePizza(@ModelAttribute Pizza pizza,
+    public String savePizza(@Valid @ModelAttribute Pizza pizza,
+                            BindingResult bindingResult,
                             @RequestParam BigDecimal cenaMala,
                             @RequestParam BigDecimal cenaStredna,
                             @RequestParam BigDecimal cenaVelka,
-                            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) throws IOException {
+                            @RequestParam(required = false) List<Long> selectedTags,
+                            @RequestParam(required = false) List<Long> selectedIngredients,
+                            Model model) throws IOException {
 
-        if (!imageFile.isEmpty()) {
-            String imagePath = pizzaService.saveImage(imageFile);
-            pizza.setObrazokUrl(imagePath);
-        } else {
-            if (pizza.getId() != null) {
-                Pizza existingPizza = pizzaService.getPizzaById(pizza.getId());
-                pizza.setObrazokUrl(existingPizza.getObrazokUrl());
-            }
+        if (selectedTags != null) {
+            Set<Tag> tags = new HashSet<>(tagService.findAllById(selectedTags));
+            pizza.setTagy(tags);
         }
+        if (selectedIngredients != null) {
+            Set<Ingrediencia> ingredients = new HashSet<>(ingredienciaService.findAllById(selectedIngredients));
+            pizza.setIngrediencie(ingredients);
+        }
+
+        if (cenaMala == null || cenaMala.compareTo(BigDecimal.ZERO) <= 0) {
+            bindingResult.rejectValue("velkosti", "error.cena", "Cena (33cm) musí byť väčšia ako nula");
+        }
+        if (cenaStredna == null || cenaStredna.compareTo(BigDecimal.ZERO) <= 0) {
+            bindingResult.rejectValue("velkosti", "error.cena", "Cena (40cm) musí byť väčšia ako nula");
+        }
+        if (cenaVelka == null || cenaVelka.compareTo(BigDecimal.ZERO) <= 0) {
+            bindingResult.rejectValue("velkosti", "error.cena", "Cena (50cm) musí byť väčšia ako nula");
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("allTags", tagService.getAllTags());
+            model.addAttribute("allIngredients", ingredienciaService.getAll());
+            model.addAttribute("cenaMala", cenaMala);
+            model.addAttribute("cenaStredna", cenaStredna);
+            model.addAttribute("cenaVelka", cenaVelka);
+            return "admin/pizza-form";
+        }
+        try {
 
         pizzaService.savePizzaWithSizes(pizza, cenaMala, cenaStredna, cenaVelka);
 
         return "redirect:/admin/pizzas";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Chyba pri ukladaní: " + e.getMessage());
+
+            model.addAttribute("allTags", tagService.getAllTags());
+            model.addAttribute("allIngredients", ingredienciaService.getAll());
+
+            return "admin/pizza-form";
+        }
+    }
+    @PostMapping("/pizzas/upload-image")
+    public String uploadPizzaImage(@RequestParam("imageFile") MultipartFile imageFile,
+                                   @RequestParam(required = false) Long pizzaId,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imagePath = pizzaService.saveImage(imageFile);
+                redirectAttributes.addFlashAttribute("uploadedUrl", imagePath);
+            }
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Chyba pri nahrávaní: " + e.getMessage());
+        }
+        String returnUrl = (pizzaId != null) ? "/admin/pizzas/edit/" + pizzaId : "/admin/pizzas/add";
+        return "redirect:" + returnUrl;
     }
 
     @GetMapping("/pizzas/edit/{id}")
     public String showEditPizzaForm(@PathVariable Long id, Model model) {
-        model.addAttribute("pizza", pizzaService.getPizzaById(id));
+        Pizza pizza = pizzaService.getPizzaById(id);
+
+        if (model.containsAttribute("uploadedUrl")) {
+            pizza.setObrazokUrl((String) model.getAttribute("uploadedUrl"));
+        }
+        model.addAttribute("pizza", pizza);
         model.addAttribute("allTags", tagService.getAllTags());
         model.addAttribute("allIngredients", ingredienciaService.getAll());
         return "admin/pizza-form";

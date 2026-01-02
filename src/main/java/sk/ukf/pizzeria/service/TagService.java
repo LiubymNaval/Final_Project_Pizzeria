@@ -41,4 +41,8 @@ public class TagService {
     public void deleteTag(Long id) {
         tagRepository.deleteById(id);
     }
+
+    public List<Tag> findAllById(List<Long> ids) {
+        return tagRepository.findAllById(ids);
+    }
 }

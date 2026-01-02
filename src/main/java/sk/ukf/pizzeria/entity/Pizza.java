@@ -12,7 +12,6 @@ public class Pizza extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "Pizza musí mať definovanú aspoň jednu veľkosť a cenu")
     @OneToMany(mappedBy = "pizza", cascade = CascadeType.ALL)
     private List<PizzaVelkost> velkosti;
 

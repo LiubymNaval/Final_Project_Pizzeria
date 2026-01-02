@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 import sk.ukf.pizzeria.repository.PizzaVelkostRepository;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Optional;
 import java.util.UUID;
 import java.io.InputStream;
 
@@ -44,33 +46,45 @@ public class PizzaService {
         if (pizza.getId() == null && pizzaRepository.existsByNazov(pizza.getNazov())) {
             throw new IllegalArgumentException("Pizza s týmto názvom už existuje");
         }
-
         if (cenaMala == null || cenaStredna == null || cenaVelka == null) {
             throw new IllegalArgumentException("Všetky ceny musia byť zadané");
         }
-
         if (cenaVelka.compareTo(cenaMala) <= 0) {
             throw new IllegalArgumentException("Cena veľkej pizze musí byť vyššia ako malej");
         }
 
-        Pizza savedPizza = pizzaRepository.save(pizza);
-        List<PizzaVelkost> existingSizes = pizzaVelkostRepository.findAllByPizza(savedPizza);
+        if (pizza.getId() != null) {
+            Pizza existingPizza = pizzaRepository.findById(pizza.getId()).orElse(null);
+            if (existingPizza != null) {
+                pizza.setVelkosti(existingPizza.getVelkosti());
+            }
+        }
 
-        updateOrCreateSize(savedPizza, existingSizes, "33cm", cenaMala);
-        updateOrCreateSize(savedPizza, existingSizes, "40cm", cenaStredna);
-        updateOrCreateSize(savedPizza, existingSizes, "50cm", cenaVelka);
+        if (pizza.getVelkosti() == null) {
+            pizza.setVelkosti(new ArrayList<>());
+        }
+
+        updateSizeInList(pizza, "33cm", cenaMala);
+        updateSizeInList(pizza, "40cm", cenaStredna);
+        updateSizeInList(pizza, "50cm", cenaVelka);
+
+        pizzaRepository.save(pizza);
     }
 
-    private void updateOrCreateSize(Pizza pizza, List<PizzaVelkost> existingSizes, String name, BigDecimal price) {
-        PizzaVelkost size = existingSizes.stream()
-                .filter(s -> s.getNazovVelkosti().equals(name))
-                .findFirst()
-                .orElse(new PizzaVelkost());
+    private void updateSizeInList(Pizza pizza, String name, BigDecimal price) {
+        Optional<PizzaVelkost> existingSize = pizza.getVelkosti().stream()
+                .filter(s -> name.equals(s.getNazovVelkosti()))
+                .findFirst();
 
-        size.setPizza(pizza);
-        size.setNazovVelkosti(name);
-        size.setCena(price);
-        pizzaVelkostRepository.save(size);
+        if (existingSize.isPresent()) {
+            existingSize.get().setCena(price);
+        } else {
+            PizzaVelkost newSize = new PizzaVelkost();
+            newSize.setPizza(pizza);
+            newSize.setNazovVelkosti(name);
+            newSize.setCena(price);
+            pizza.getVelkosti().add(newSize);
+        }
     }
 
     public Pizza getPizzaById(Long id) {

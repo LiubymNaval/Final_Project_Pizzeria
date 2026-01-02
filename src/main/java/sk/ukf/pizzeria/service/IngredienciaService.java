@@ -38,4 +38,7 @@ public class IngredienciaService {
         return repository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Ingrediencia", id));
     }
+    public List<Ingrediencia> findAllById(List<Long> ids) {
+        return repository.findAllById(ids);
+    }
 }

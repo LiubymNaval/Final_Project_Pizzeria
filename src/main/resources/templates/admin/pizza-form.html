@@ -5,9 +5,38 @@
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
 <div class="container mt-5">
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     <h2 th:text="${pizza.id == null ? 'Pridať novú pizzu' : 'Upraviť pizzu'}">Form</h2>
 
-    <form th:action="@{/admin/pizzas/save}" th:object="${pizza}" method="post" enctype="multipart/form-data" class="row g-3">
+    <div class="card mb-4 border-info">
+        <div class="card-body">
+            <h5>Nahrať obrázok</h5>
+            <form th:action="@{/admin/pizzas/upload-image}" method="post" enctype="multipart/form-data" class="row g-2">
+                <input type="hidden" name="pizzaId" th:value="${pizza.id}">
+
+                <div class="col-auto">
+                    <input type="file" name="imageFile" class="form-control" accept="image/*" required>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-info text-white">Nahrať na server</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <form th:action="@{/admin/pizzas/save}" th:object="${pizza}" method="post" class="row g-3">
+        <div class="col-12" th:if="${#fields.hasErrors('*')}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Chyba pri vypĺňaní formulára:</strong>
+                <ul class="mb-0 mt-1">
+                    <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
         <input type="hidden" th:field="*{id}">
 
         <div class="col-md-6">
@@ -25,17 +54,13 @@
             <textarea th:field="*{popis}" class="form-control" rows="3"></textarea>
         </div>
 
-        <div class="col-md-12">
-            <label class="form-label">Obrázok pizze</label>
-
-            <div th:if="${pizza.obrazokUrl}" class="mb-2">
-                <img th:src="@{${pizza.obrazokUrl}}" style="height: 100px; border-radius: 5px;" alt="Current Image">
-                <div class="text-muted small" th:text="${pizza.obrazokUrl}"></div>
+        <div class="col-12">
+            <label class="form-label">URL obrázka</label>
+            <div th:if="*{obrazokUrl}" class="mb-2">
+                <img th:src="*{obrazokUrl}" style="height: 100px; border-radius: 5px;" alt="Preview">
             </div>
-
-            <input type="file" name="imageFile" class="form-control" accept="image/*">
-
-            <input type="text" th:field="*{obrazokUrl}" class="form-control mt-1" placeholder="Alebo vložte URL manuálne">
+            <input type="text" th:field="*{obrazokUrl}" class="form-control"
+                   placeholder="URL sa vyplní automaticky po nahratí alebo vložte manuálne">
         </div>
 
         <div class="col-12"><hr><h5>Cenník (Povinné)</h5></div>
@@ -43,17 +68,19 @@
         <div class="col-md-4">
             <label class="form-label">Malá (33cm) €</label>
             <input type="number" name="cenaMala" step="0.01" class="form-control" required
-                   th:value="${pizza.velkosti != null && pizza.velkosti.size() > 0 ? pizza.velkosti[0].cena : ''}">
+                   th:value="${cenaMala != null ? cenaMala : (pizza.velkosti != null && pizza.velkosti.size() > 0 ? pizza.velkosti[0].cena : '')}">
         </div>
+
         <div class="col-md-4">
             <label class="form-label">Stredná (40cm) €</label>
             <input type="number" name="cenaStredna" step="0.01" class="form-control" required
-                   th:value="${pizza.velkosti != null && pizza.velkosti.size() > 1 ? pizza.velkosti[1].cena : ''}">
+                   th:value="${cenaStredna != null ? cenaStredna : (pizza.velkosti != null && pizza.velkosti.size() > 1 ? pizza.velkosti[1].cena : '')}">
         </div>
+
         <div class="col-md-4">
             <label class="form-label">Rodinná (50cm) €</label>
             <input type="number" name="cenaVelka" step="0.01" class="form-control" required
-                   th:value="${pizza.velkosti != null && pizza.velkosti.size() > 2 ? pizza.velkosti[2].cena : ''}">
+                   th:value="${cenaVelka != null ? cenaVelka : (pizza.velkosti != null && pizza.velkosti.size() > 2 ? pizza.velkosti[2].cena : '')}">
         </div>
 
         <div class="col-12"><hr></div>
@@ -64,9 +91,10 @@
                 <div th:each="tag : ${allTags}" class="col-6 col-sm-4">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox"
-                               th:field="*{tagy}"
+                               name="selectedTags"
                                th:value="${tag.id}"
-                               th:id="'tag' + ${tag.id}">
+                               th:id="'tag' + ${tag.id}"
+                               th:checked="${pizza.tagy != null && pizza.tagy.contains(tag)}">
                         <label class="form-check-label" th:for="'tag' + ${tag.id}" th:text="${tag.nazov}"></label>
                     </div>
                 </div>
@@ -75,15 +103,17 @@
 
         <div class="col-md-6">
             <h5>Ingrediencie (Zloženie)</h5>
-            <div class="row" style="max-height: 200px; overflow-y: auto;"> <div th:each="ing : ${allIngredients}" class="col-6 col-sm-4">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox"
-                           th:field="*{ingrediencie}"
-                           th:value="${ing.id}"
-                           th:id="'ing' + ${ing.id}">
-                    <label class="form-check-label" th:for="'ing' + ${ing.id}" th:text="${ing.nazov}"></label>
+            <div class="row" style="max-height: 200px; overflow-y: auto;">
+                <div th:each="ing : ${allIngredients}" class="col-6 col-sm-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox"
+                               name="selectedIngredients"
+                               th:value="${ing.id}"
+                               th:id="'ing' + ${ing.id}"
+                               th:checked="${pizza.ingrediencie != null && pizza.ingrediencie.contains(ing)}">
+                        <label class="form-check-label" th:for="'ing' + ${ing.id}" th:text="${ing.nazov}"></label>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
 
