@@ -37,12 +37,17 @@ public class KosikController {
         Pouzivatel user = pouzivatelService.findByEmail(principal.getName());
         List<PolozkaKosika> items = polozkaKosikaService.getCartItems(user);
 
+        boolean hasInactiveItems = items.stream()
+                .anyMatch(item -> !item.getPizzaVelkost().getPizza().isAktivna());
+
         BigDecimal total = items.stream()
+                .filter(item -> item.getPizzaVelkost().getPizza().isAktivna())
                 .map(item -> item.getPizzaVelkost().getCena().multiply(new BigDecimal(item.getMnozstvo())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         model.addAttribute("cartItems", items);
         model.addAttribute("totalPrice", total);
+        model.addAttribute("hasInactiveItems", hasInactiveItems);;
 
         return "cart";
     }

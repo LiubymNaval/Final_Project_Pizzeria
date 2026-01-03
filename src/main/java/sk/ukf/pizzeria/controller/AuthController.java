@@ -34,8 +34,6 @@ public class AuthController {
         if (result.hasErrors()) {
             return "registration";
         }
-        // 1. Проверка аннотаций самого DTO (@NotBlank, @Email, @Pattern и т.д.)
-        // Если пользователь ввел короткий пароль или кривой телефон - остановимся тут.
         if (result.hasErrors()) {
             return "registration";
         }

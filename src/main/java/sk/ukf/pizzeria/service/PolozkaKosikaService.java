@@ -2,6 +2,7 @@ package sk.ukf.pizzeria.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sk.ukf.pizzeria.entity.PizzaVelkost;
 import sk.ukf.pizzeria.entity.PolozkaKosika;
 import sk.ukf.pizzeria.entity.Pouzivatel;
 import sk.ukf.pizzeria.exception.ObjectNotFoundException;
@@ -37,6 +38,15 @@ public class PolozkaKosikaService {
         if (!user.isAktivny()) {
             throw new IllegalStateException("Váš účet je zablokovaný");
         }
+
+
+        PizzaVelkost velkost = pizzaVelkostRepository.findById(velkostId)
+                .orElseThrow(() -> new ObjectNotFoundException("PizzaVelkost", velkostId));
+
+        if (!velkost.getPizza().isAktivna()) {
+            throw new IllegalStateException("Táto pizza už nie je v ponuke");
+        }
+
 
         Optional<PolozkaKosika> existingItem = polozkaKosikaRepository
                 .findByPouzivatelAndPizzaVelkost_Id(user, velkostId);

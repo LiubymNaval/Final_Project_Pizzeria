@@ -33,7 +33,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public String listUsers(Model model) {
-        model.addAttribute("users", pouzivatelService.getAllUsers());
+        model.addAttribute("users", pouzivatelService.getAllForAdmin());
         return "admin/users";
     }
 
@@ -53,8 +53,9 @@ public class AdminController {
     public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             pouzivatelService.deleteUser(id);
+            redirectAttributes.addFlashAttribute("success", "Používateľ bol úspešne odstránený");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Používateľa nemožno odstrániť, pretože má priradené objednávky. Skúste ho radšej deaktivovať.");
+            redirectAttributes.addFlashAttribute("error", "Chyba pri odstraňovaní používateľa: " + e.getMessage());
         }
         return "redirect:/admin/users";
     }
@@ -67,7 +68,7 @@ public class AdminController {
 
     @GetMapping("/pizzas")
     public String listAllPizzas(Model model) {
-        model.addAttribute("pizzas", pizzaService.getAllPizzas());
+        model.addAttribute("pizzas", pizzaService.getAllForAdmin());
         return "admin/pizzas-list";
     }
 
@@ -166,8 +167,13 @@ public class AdminController {
     }
 
     @PostMapping("/pizzas/delete/{id}")
-    public String deletePizza(@PathVariable Long id) {
-        pizzaService.deletePizza(id);
+    public String deletePizza(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            pizzaService.deletePizza(id);
+            redirectAttributes.addFlashAttribute("success", "Pizza bola úspešne odstránená z ponuky");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Chyba pri odstraňovaní pizze: " + e.getMessage());
+        }
         return "redirect:/admin/pizzas";
     }
 

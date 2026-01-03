@@ -29,4 +29,7 @@ public interface PizzaRepository extends JpaRepository<Pizza, Long> {
     List<Pizza> findByTagName(@Param("tagName") String tagName);
 
     Optional<Pizza> findBySlug(String slug);
+
+    @Query("SELECT p FROM Pizza p WHERE p.slug NOT LIKE 'deleted_%'")
+    List<Pizza> findAllExceptDeleted();
 }

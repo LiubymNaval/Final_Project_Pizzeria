@@ -1,5 +1,6 @@
 package sk.ukf.pizzeria.service;
 
+import org.springframework.security.authentication.DisabledException;
 import sk.ukf.pizzeria.entity.Pouzivatel;
 import sk.ukf.pizzeria.repository.PouzivatelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Pouzivatel pouzivatel = pouzivatelRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Používateľ s emailom " + email + " nebol nájdený."));
+
+
+        if (!pouzivatel.isAktivny()) {
+            throw new DisabledException("Tento účet bol zrušený alebo deaktivovaný");
+        }
 
         List<SimpleGrantedAuthority> authorities = pouzivatel.getRoly().stream()
                 .map(rola -> new SimpleGrantedAuthority(rola.getNazov()))

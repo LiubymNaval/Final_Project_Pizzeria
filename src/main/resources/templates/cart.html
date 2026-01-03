@@ -10,6 +10,9 @@
     <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" class="alert alert-warning mt-3">
         Váš košík je prázdny. <a href="/">Späť na menu</a>.
     </div>
+    <div th:if="${param.error}" class="alert alert-danger mt-3" th:text="${param.error}">
+        Chyba pri objednávke
+    </div>
 
     <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}">
         <div class="row">
@@ -26,16 +29,32 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="item : ${cartItems}">
-                        <td th:text="${item.pizzaVelkost.pizza.nazov}">Margarita</td>
+                    <tr th:each="item : ${cartItems}" th:classappend="${!item.pizzaVelkost.pizza.aktivna} ? 'table-danger' : ''">
+                        <td>
+                            <strong th:text="${item.pizzaVelkost.pizza.nazov}">Margarita</strong>
+                            <div th:if="${!item.pizzaVelkost.pizza.aktivna}">
+                                <span class="badge bg-danger">Momentálne nedostupné</span>
+                            </div>
+                        </td>
                         <td th:text="${item.pizzaVelkost.nazovVelkosti}">33cm</td>
-                        <td th:text="${item.pizzaVelkost.cena} + ' €'">5.00 €</td>
+
+                        <td>
+                            <span th:if="${item.pizzaVelkost.pizza.aktivna}" th:text="${item.pizzaVelkost.cena} + ' €'">5.00 €</span>
+                            <span th:unless="${item.pizzaVelkost.pizza.aktivna}">-</span>
+                        </td>
+
                         <td>
                             <span class="badge bg-light text-dark border" th:text="${item.mnozstvo}">1</span>
                         </td>
-                        <td class="fw-bold" th:text="${#numbers.formatDecimal(item.pizzaVelkost.cena * item.mnozstvo, 1, 2)} + ' €'">10.00 €</td>
+
+                        <td class="fw-bold">
+                        <span th:if="${item.pizzaVelkost.pizza.aktivna}"
+                        th:text="${#numbers.formatDecimal(item.pizzaVelkost.cena * item.mnozstvo, 1, 2)} + ' €'">10.00 €</span>
+                            <span th:unless="${item.pizzaVelkost.pizza.aktivna}">0.00 €</span>
+                        </td>
+
                         <td>
-                            <a th:href="@{/cart/delete/{id}(id=${item.id})}" class="text-danger"><i class="bi bi-x-lg"></i></a>
+                            <a th:href="@{/cart/delete/{id}(id=${item.id})}" class="text-danger" title="Odstrániť"><i class="bi bi-x-lg"></i></a>
                         </td>
                     </tr>
                     </tbody>
@@ -58,7 +77,15 @@
                                 <input type="text" name="poznamka" class="form-control" placeholder="Napr. bez cibule">
                             </div>
 
-                            <button type="submit" class="btn btn-success w-100 btn-lg">Objednať záväzne</button>
+                            <button type="submit"
+                                    class="btn btn-success w-100 btn-lg"
+                                    th:disabled="${hasInactiveItems}">
+                                Objednať záväzne
+                            </button>
+
+                            <p th:if="${hasInactiveItems}" class="text-danger small mt-2">
+                                Niektoré položky v košíku už nie sú dostupné. Odstráňte ich, aby ste mohli pokračovať.
+                            </p>
                         </form>
 
                     </div>

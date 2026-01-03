@@ -20,10 +20,14 @@
                     <strong th:text="${#temporals.format(order.createdAt, 'HH:mm')}">12:30</strong>
                 </div>
                 <div class="card-body">
-                    <p class="mb-2 small">
-                        <strong>Zákazník:</strong>
-                        <span th:text="${order.pouzivatel.meno} + ' ' + ${order.pouzivatel.priezvisko}"></span>
-                    </p>
+                    <p class="mb-1 small"><strong>Zákazník:</strong></p>
+                    <div class="mb-2">
+                        <span class="fw-bold" th:text="${order.pouzivatel.meno} + ' ' + ${order.pouzivatel.priezvisko}"></span>
+                        <div class="text-muted extra-small" style="font-size: 0.85rem;">
+                            <div><i class="bi bi-telephone"></i> <span th:text="${order.pouzivatel.telefon}"></span></div>
+                            <div><i class="bi bi-envelope"></i> <span th:text="${order.pouzivatel.email}"></span></div>
+                        </div>
+                    </div>
 
                     <ul class="list-group list-group-flush mb-3">
                         <li class="list-group-item px-0" th:each="item : ${order.polozky}">

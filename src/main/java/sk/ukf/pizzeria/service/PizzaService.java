@@ -94,7 +94,11 @@ public class PizzaService {
 
     @Transactional
     public void deletePizza(Long id) {
-        pizzaRepository.deleteById(id);
+        Pizza pizza = pizzaRepository.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException("Pizza", id));
+        pizza.setAktivna(false);
+        pizza.setSlug("deleted_" + System.currentTimeMillis() + "_" + pizza.getSlug());
+        pizzaRepository.save(pizza);
     }
 
     public List<Pizza> getAllPizzas() {
@@ -102,8 +106,14 @@ public class PizzaService {
     }
 
     public Pizza getPizzaBySlug(String slug) {
-        return pizzaRepository.findBySlug(slug)
+        Pizza pizza = pizzaRepository.findBySlug(slug)
                 .orElseThrow(() -> new ObjectNotFoundException("Pizza so slugom", slug));
+
+        if (!pizza.isAktivna()) {
+            throw new ObjectNotFoundException("Pizza bola odstránená z ponuky", slug);
+        }
+
+        return pizza;
     }
 
     public String saveImage(MultipartFile file) throws IOException {
@@ -127,5 +137,7 @@ public class PizzaService {
 
         return "/uploads/" + fileName;
     }
-
+    public List<Pizza> getAllForAdmin() {
+        return pizzaRepository.findAllExceptDeleted();
+    }
 }

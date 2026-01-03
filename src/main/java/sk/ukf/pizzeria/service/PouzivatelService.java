@@ -34,9 +34,15 @@ public class PouzivatelService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private PolozkaKosikaService polozkaKosikaService;
+
     // Registrácia nového používateľa
     @Transactional
     public void registerUser(RegistraciaDto dto) {
+        if (dto.getEmail().toLowerCase().startsWith("deleted_")) {
+            throw new IllegalArgumentException("Email nesmie začínať na 'deleted_'");
+        }
         if (pouzivatelRepository.existsByEmail(dto.getEmail())) {
             throw new IllegalArgumentException("Používateľ s týmto emailom už existuje");
         }
@@ -57,7 +63,13 @@ public class PouzivatelService {
 
     @Transactional
     public void deleteUser(Long userId) {
-        pouzivatelRepository.deleteById(userId);
+        Pouzivatel user = pouzivatelRepository.findById(userId)
+                .orElseThrow(() -> new ObjectNotFoundException("Používateľ", userId));
+        user.setAktivny(false);
+        String deletedPrefix = "deleted_" + System.currentTimeMillis() + "_";
+        user.setEmail(deletedPrefix + user.getEmail());
+        polozkaKosikaService.clearCart(user);
+        pouzivatelRepository.save(user);
     }
 
     public Pouzivatel findByEmail(String email) {
@@ -84,10 +96,6 @@ public class PouzivatelService {
         }
         user.setHeslo(passwordEncoder.encode(newPassword));
         pouzivatelRepository.save(user);
-    }
-
-    public List<Pouzivatel> getAllUsers() {
-        return pouzivatelRepository.findAll();
     }
 
     @Transactional
@@ -135,5 +143,9 @@ public class PouzivatelService {
         }
 
         return "/uploads/" + fileName;
+    }
+
+    public List<Pouzivatel> getAllForAdmin() {
+        return pouzivatelRepository.findAllExceptDeleted();
     }
 }
