@@ -97,6 +97,9 @@
         color: #ff4d4d !important;
         border: 1px solid #e63946 !important;
     }
+    ::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
 </style>
 
 <nav th:replace="~{fragments/layout :: header}"></nav>
@@ -156,15 +159,37 @@
                 </div>
             </div>
 
-            <div class="card border-warning mb-4">
-                <div class="card-header bg-warning">Zmena hesla</div>
-                <div class="card-body p-4">
-                    <div th:if="${passwordError}" class="alert alert-danger mb-3" th:text="${passwordError}"></div>
+            <div class="card bg-dark border-danger mb-4 shadow-lg">
+                <div class="card-header bg-danger text-white fw-bold">
+                    <i class="bi bi-key-fill me-2"></i>Zmena hesla
+                </div>
 
+                <div class="card-body p-4">
                     <form th:action="@{/profile/change-password}" method="post">
-                        <div class="input-group">
-                            <input type="password" name="newPassword" class="form-control" placeholder="Nové heslo" required>
-                            <button class="btn btn-outline-dark" type="submit">Zmeniť hesло</button>
+                        <div class="mb-3">
+                            <label class="form-label text-white fw-semibold">Zadajte nové heslo</label>
+
+                            <div class="input-group has-validation">
+                                <input type="password"
+                                       name="newPassword"
+                                       th:classappend="${passwordError} ? 'is-invalid' : ''"
+                                class="form-control bg-dark text-white border-secondary border-opacity-50 shadow-none"
+                                placeholder="Minimálne 8 znakov"
+                                required>
+
+                                <button class="btn btn-danger fw-bold" type="submit">Uložiť</button>
+
+                                <div th:if="${passwordError}"
+                                     class="invalid-feedback fw-bold text-danger"
+                                     style="font-size: 0.95rem;"
+                                     th:text="${passwordError}">
+                                    Chyba pri zadávaní hesla
+                                </div>
+                            </div>
+
+                            <div class="form-text text-white-50 mt-2">
+                                <i class="bi bi-info-circle me-1"></i> Heslo musí mať aspoň 8 znakov dlhé
+                            </div>
                         </div>
                     </form>
                 </div>

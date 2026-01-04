@@ -1,5 +1,7 @@
 package sk.ukf.pizzeria.controller;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,21 +32,23 @@ public class AuthController {
 
     @PostMapping("/registration")
     public String registerUser(@Valid @ModelAttribute("user") RegistraciaDto dto,
-                               BindingResult result) {
-        if (result.hasErrors()) {
-            return "registration";
-        }
+                               BindingResult result,
+                               HttpServletRequest request) {
         if (result.hasErrors()) {
             return "registration";
         }
 
         try {
             pouzivatelService.registerUser(dto);
+            request.login(dto.getEmail(), dto.getHeslo());
 
         } catch (IllegalArgumentException e) {
             result.rejectValue("email", "error.user", e.getMessage());
             return "registration";
+        } catch (ServletException e) {
+            return "redirect:/login?success";
         }
-        return "redirect:/login?success";
+
+        return "redirect:/?registrationSuccess";
     }
 }

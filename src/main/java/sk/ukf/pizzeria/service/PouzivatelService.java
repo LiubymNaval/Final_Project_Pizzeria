@@ -39,7 +39,7 @@ public class PouzivatelService {
 
     // Registrácia nového používateľa
     @Transactional
-    public void registerUser(RegistraciaDto dto) {
+    public Pouzivatel registerUser(RegistraciaDto dto) {
         if (dto.getEmail().toLowerCase().startsWith("deleted_")) {
             throw new IllegalArgumentException("Email nesmie začínať na 'deleted_'");
         }
@@ -58,7 +58,7 @@ public class PouzivatelService {
                 .orElseThrow(() -> new ObjectNotFoundException("Rola", "ROLE_ZAKAZNIK"));
         user.setRoly(Collections.singleton(zakladnaRola));
 
-        pouzivatelRepository.save(user);
+        return pouzivatelRepository.save(user);
     }
 
     @Transactional

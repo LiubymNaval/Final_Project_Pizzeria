@@ -101,10 +101,6 @@ public class PizzaService {
         pizzaRepository.save(pizza);
     }
 
-    public List<Pizza> getAllPizzas() {
-        return pizzaRepository.findAll();
-    }
-
     public Pizza getPizzaBySlug(String slug) {
         Pizza pizza = pizzaRepository.findBySlug(slug)
                 .orElseThrow(() -> new ObjectNotFoundException("Pizza so slugom", slug));

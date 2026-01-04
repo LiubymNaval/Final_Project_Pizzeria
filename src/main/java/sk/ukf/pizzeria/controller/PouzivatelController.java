@@ -75,14 +75,19 @@ public class PouzivatelController {
     public String changePassword(Principal principal,
                                  @RequestParam("newPassword") String newPassword,
                                  RedirectAttributes redirectAttributes) {
+        try {
+            pouzivatelService.updatePassword(principal.getName(), newPassword);
+            redirectAttributes.addFlashAttribute("successMessage", "Heslo bolo úspešne zmenené!");
+            return "redirect:/profile?success";
 
-        if (newPassword == null || newPassword.length() < 8) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Heslo musí mať aspoň 8 znakov!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("passwordError", e.getMessage());
+            return "redirect:/profile";
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("passwordError", "Nastala neočakávaná chyba.");
             return "redirect:/profile";
         }
-
-        pouzivatelService.updatePassword(principal.getName(), newPassword);
-        return "redirect:/profile?success=passwordChanged";
     }
 
     @PostMapping("/profile/delete")
