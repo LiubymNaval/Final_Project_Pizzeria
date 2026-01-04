@@ -2,14 +2,15 @@ package sk.ukf.pizzeria.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import sk.ukf.pizzeria.entity.Ingrediencia;
-import sk.ukf.pizzeria.entity.Pizza;
-import sk.ukf.pizzeria.entity.Tag;
+import sk.ukf.pizzeria.entity.*;
 import sk.ukf.pizzeria.service.*;
 
 import java.math.BigDecimal;
@@ -32,8 +33,15 @@ public class AdminController {
     @Autowired private TagService tagService;
 
     @GetMapping("/users")
-    public String listUsers(Model model) {
-        model.addAttribute("users", pouzivatelService.getAllForAdmin());
+    public String listUsers(@RequestParam(defaultValue = "0") int page, Model model) {
+        Pageable pageable = PageRequest.of(page, 10);
+
+        Page<Pouzivatel> userPage = pouzivatelService.getAllForAdmin(pageable);
+
+        model.addAttribute("users", userPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", userPage.getTotalPages());
+
         return "admin/users";
     }
 
@@ -61,17 +69,30 @@ public class AdminController {
     }
 
     @GetMapping("/orders")
-    public String allOrders(Model model) {
-        model.addAttribute("orders", objednavkaService.getAllOrders());
+    public String allOrders(@RequestParam(defaultValue = "0") int page, Model model) {
+        Pageable pageable = PageRequest.of(page, 10);
+
+        Page<Objednavka> orderPage = objednavkaService.getAllOrders(pageable);
+
+        model.addAttribute("orders", orderPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", orderPage.getTotalPages());
+
         return "admin/orders";
     }
 
     @GetMapping("/pizzas")
-    public String listAllPizzas(Model model) {
-        model.addAttribute("pizzas", pizzaService.getAllForAdmin());
+    public String listAllPizzas(@RequestParam(defaultValue = "0") int page, Model model) {
+        Pageable pageable = PageRequest.of(page, 9);
+
+        Page<Pizza> pizzaPage = pizzaService.getAllForAdmin(pageable);
+
+        model.addAttribute("pizzas", pizzaPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", pizzaPage.getTotalPages());
+
         return "admin/pizzas-list";
     }
-
     @GetMapping("/pizzas/add")
     public String showAddPizzaForm(Model model) {
         Pizza pizza = new Pizza();

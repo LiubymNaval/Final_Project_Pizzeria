@@ -72,18 +72,37 @@
         background-color: transparent !important;
         border-bottom: 1px solid #333 !important;
     }
+
+    .pagination .page-link {
+        background-color: #1a1a1a;
+        border-color: #333;
+        color: white;
+    }
+    .pagination .page-link:hover {
+        background-color: #e63946;
+        color: white;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #e63946;
+        border-color: #e63946;
+    }
+    .pagination .page-item.disabled .page-link {
+        background-color: #0f0f0f;
+        color: #444;
+        border-color: #222;
+    }
 </style>
 
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
     <h2>História objednávok</h2>
 
     <div th:if="${orders.isEmpty()}" class="alert alert-dark border-secondary text-white">
         Zatiaľ nemáte žiadne objednávky. <a href="/" class="text-danger fw-bold">Vyberte si pizzu!</a>
     </div>
 
-    <div class="accordion mt-3" id="ordersAccordion">
+    <div class="accordion mt-3 shadow" id="ordersAccordion">
         <div class="accordion-item" th:each="order : ${orders}">
             <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -139,6 +158,32 @@
             </div>
         </div>
     </div>
+
+    <nav class="mt-4" th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link shadow-none" th:href="@{/my-orders(page=${currentPage - 1})}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                th:classappend="${currentPage == i} ? 'active'">
+                <a class="page-link shadow-none" th:href="@{/my-orders(page=${i})}" th:text="${i + 1}">1</a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link shadow-none" th:href="@{/my-orders(page=${currentPage + 1})}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+
+        </ul>
+        <div class="text-center text-secondary small mt-2">
+            Strana <span th:text="${currentPage + 1}"></span> z <span th:text="${totalPages}"></span>
+        </div>
+    </nav>
 </div>
 
 <div th:replace="~{fragments/layout :: footer}"></div>

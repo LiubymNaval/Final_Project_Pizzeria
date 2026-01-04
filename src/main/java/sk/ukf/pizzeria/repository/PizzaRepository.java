@@ -1,5 +1,7 @@
 package sk.ukf.pizzeria.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,9 +23,9 @@ public interface PizzaRepository extends JpaRepository<Pizza, Long> {
             "LOWER(p.popis) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(t.nazov) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(i.nazov) LIKE LOWER(CONCAT('%', :query, '%')))")
-    List<Pizza> searchByAllCriteria(@Param("query") String query);
+    Page<Pizza> searchByAllCriteria(@Param("query") String query, Pageable pageable);
 
-    List<Pizza> findByAktivnaTrue();
+    Page<Pizza> findByAktivnaTrue(Pageable pageable);
 
     @Query("SELECT p FROM Pizza p JOIN p.tagy t WHERE t.nazov = :tagName")
     List<Pizza> findByTagName(@Param("tagName") String tagName);
@@ -31,5 +33,5 @@ public interface PizzaRepository extends JpaRepository<Pizza, Long> {
     Optional<Pizza> findBySlug(String slug);
 
     @Query("SELECT p FROM Pizza p WHERE p.slug NOT LIKE 'deleted_%'")
-    List<Pizza> findAllExceptDeleted();
+    Page<Pizza> findAllExceptDeleted(Pageable pageable);
 }

@@ -1,5 +1,7 @@
 package sk.ukf.pizzeria.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import sk.ukf.pizzeria.entity.Pizza;
 import sk.ukf.pizzeria.entity.PizzaVelkost;
@@ -29,16 +31,16 @@ public class PizzaService {
     private PizzaVelkostRepository pizzaVelkostRepository;
 
     // Získanie všetkých aktívnych pízz pre menu
-    public List<Pizza> getAllActivePizzas() {
-        return pizzaRepository.findByAktivnaTrue();
+    public Page<Pizza> getAllActivePizzas(Pageable pageable) {
+        return pizzaRepository.findByAktivnaTrue(pageable);
     }
 
     // Vyhľadávanie pízz (Searchbar)
-    public List<Pizza> searchPizzas(String query) {
+    public Page<Pizza> searchPizzas(String query, Pageable pageable) {
         if (query == null || query.trim().isEmpty()) {
-            return getAllActivePizzas();
+            return getAllActivePizzas(pageable);
         }
-        return pizzaRepository.searchByAllCriteria(query.trim());
+        return pizzaRepository.searchByAllCriteria(query.trim(), pageable);
     }
 
     @Transactional
@@ -133,7 +135,7 @@ public class PizzaService {
 
         return "/uploads/" + fileName;
     }
-    public List<Pizza> getAllForAdmin() {
-        return pizzaRepository.findAllExceptDeleted();
+    public Page<Pizza> getAllForAdmin(Pageable pageable) {
+        return pizzaRepository.findAllExceptDeleted(pageable);
     }
 }

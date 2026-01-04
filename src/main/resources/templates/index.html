@@ -57,6 +57,18 @@
         color: white;
         border-color: #e63946;
     }
+
+    .pagination .page-link {
+        transition: all 0.2s ease;
+    }
+    .pagination .page-item.active .page-link {
+        z-index: 3;
+    }
+    .pagination .page-item.disabled .page-link {
+        background-color: #1a1a1a !important;
+        border-color: #333 !important;
+        opacity: 0.5;
+    }
 </style>
 <body>
 <nav th:replace="~{fragments/layout :: header}"></nav>
@@ -66,7 +78,8 @@
         <div class="col-md-6 mx-auto text-center">
             <h2 class="mb-4 text-uppercase fw-bold"><i class="bi bi-search text-danger"></i> Vyberte si pizzu</h2>
             <form th:action="@{/search}" method="get" class="d-flex">
-                <input class="form-control search-input me-2 py-2" type="search" name="query" placeholder="Hľadať pizzu (názov, tag)...">
+                <input class="form-control search-input me-2 py-2" type="search" name="query"
+                       th:value="${query}" placeholder="Hľadať pizzu (názov, tag)...">
                 <button class="btn btn-pizza-red px-4" type="submit">Hľadať</button>
             </form>
         </div>
@@ -93,7 +106,7 @@
 
                     <h5 class="text-white fw-bold mt-3">
                         <span class="text-secondary fs-6 fw-normal">od</span>
-                        <span th:text="${pizza.velkosti[0].cena} + ' €'">0.00 €</span>
+                        <span th:text="${pizza.velkosti != null && !pizza.velkosti.isEmpty() ? pizza.velkosti[0].cena : '0.00'} + ' €'">0.00 €</span>
                     </h5>
                 </div>
 
@@ -117,7 +130,7 @@
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <label class="mb-2">Vyberte veľkosť:</label>
+                                <label class="mb-2 text-white-50 small">Vyberte veľkosť:</label>
                                 <select name="velkostId" class="form-select mb-3">
                                     <option th:each="v : ${pizza.velkosti}"
                                             th:value="${v.id}"
@@ -126,7 +139,7 @@
                                 </select>
                                 <input type="hidden" name="pizzaId" th:value="${pizza.id}">
 
-                                <label class="mb-2">Množstvo:</label>
+                                <label class="mb-2 text-white-50 small">Množstvo:</label>
                                 <input type="number" name="mnozstvo" value="1" min="1" max="10" class="form-control">
                             </div>
                             <div class="modal-footer">
@@ -136,6 +149,41 @@
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5 mb-5" th:if="${totalPages > 1}">
+        <div class="col-12">
+            <nav aria-label="Pizza pagination">
+                <ul class="pagination justify-content-center">
+
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link bg-dark text-white border-secondary border-opacity-50 shadow-none"
+                           th:href="${query != null} ? @{/search(query=${query}, page=${currentPage - 1})} : @{/(page=${currentPage - 1})}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+
+                    <li class="page-item mx-1"
+                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${currentPage == i} ? 'active'">
+                        <a class="page-link rounded shadow-none"
+                           th:classappend="${currentPage == i} ? 'bg-danger border-danger text-white' : 'bg-dark text-white border-secondary border-opacity-50'"
+                           th:href="${query != null} ? @{/search(query=${query}, page=${i})} : @{/(page=${i})}"
+                           th:text="${i + 1}">1</a>
+                    </li>
+
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link bg-dark text-white border-secondary border-opacity-50 shadow-none"
+                           th:href="${query != null} ? @{/search(query=${query}, page=${currentPage + 1})} : @{/(page=${currentPage + 1})}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="text-center text-white-50 small mt-2">
+                Strana <span th:text="${currentPage + 1}">1</span> z <span th:text="${totalPages}">5</span>
             </div>
         </div>
     </div>

@@ -1,5 +1,7 @@
 package sk.ukf.pizzeria.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import sk.ukf.pizzeria.dto.ProfilDto;
 import sk.ukf.pizzeria.dto.RegistraciaDto;
@@ -145,7 +147,7 @@ public class PouzivatelService {
         return "/uploads/" + fileName;
     }
 
-    public List<Pouzivatel> getAllForAdmin() {
-        return pouzivatelRepository.findAllExceptDeleted();
+    public Page<Pouzivatel> getAllForAdmin(Pageable pageable) {
+        return pouzivatelRepository.findAllExceptDeleted(pageable);
     }
 }

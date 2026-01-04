@@ -1,5 +1,7 @@
 package sk.ukf.pizzeria.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import sk.ukf.pizzeria.entity.Objednavka;
 import sk.ukf.pizzeria.entity.PolozkaKosika;
@@ -116,8 +118,8 @@ public class ObjednavkaService {
         objednavkaRepository.save(objednavka);
     }
 
-    public List<Objednavka> getAllOrders() {
-        return objednavkaRepository.findAll();
+    public Page<Objednavka> getAllOrders(Pageable pageable) {
+        return objednavkaRepository.findAllByOrderByCreatedAtDesc(pageable);
     }
 
     public boolean checkNewOrders() {
@@ -136,7 +138,7 @@ public class ObjednavkaService {
         );
     }
 
-    public List<Objednavka> getMyOrders(String email) {
-        return objednavkaRepository.findAllByPouzivatelEmailOrderByCreatedAtDesc(email);
+    public Page<Objednavka> getMyOrders(String email, Pageable pageable) {
+        return objednavkaRepository.findAllByPouzivatelEmailOrderByCreatedAtDesc(email, pageable);
     }
 }
