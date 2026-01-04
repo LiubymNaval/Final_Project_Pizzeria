@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import sk.ukf.pizzeria.entity.Pizza;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,9 +25,6 @@ public interface PizzaRepository extends JpaRepository<Pizza, Long> {
     Page<Pizza> searchByAllCriteria(@Param("query") String query, Pageable pageable);
 
     Page<Pizza> findByAktivnaTrue(Pageable pageable);
-
-    @Query("SELECT p FROM Pizza p JOIN p.tagy t WHERE t.nazov = :tagName")
-    List<Pizza> findByTagName(@Param("tagName") String tagName);
 
     Optional<Pizza> findBySlug(String slug);
 
