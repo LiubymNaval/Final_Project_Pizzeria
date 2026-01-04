@@ -2,36 +2,106 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Prihlásenie')}"></head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; font-family: 'Segoe UI', sans-serif; }
+
+    .login-container {
+        max-width: 400px;
+        margin-top: 80px;
+    }
+
+    .card {
+        background-color: #1a1a1a !important;
+        border: 1px solid #333 !important;
+        border-radius: 15px !important;
+        padding: 20px;
+    }
+
+    h3 {
+        color: #e63946 !important;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .form-control {
+        background-color: #0f0f0f !important;
+        border: 1px solid #444 !important;
+        color: #ffffff !important;
+    }
+
+    .form-control:focus {
+        border-color: #e63946 !important;
+    }
+
+    .form-floating label {
+        color: #888 !important;
+    }
+
+    .form-control:focus ~ label {
+        color: #e63946 !important;
+    }
+
+    .btn-primary {
+        background-color: #e63946 !important;
+        border: none !important;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 12px;
+        transition: 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #ff4d5a !important;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(230, 57, 70, 0.4);
+    }
+
+    .alert {
+        border-radius: 10px !important;
+        font-size: 0.9rem;
+        font-weight: bold;
+        background-color: #0f0f0f !important;
+    }
+    .alert-danger { color: #ff4d4d !important; border: 1px solid #ff4d4d !important; }
+    .alert-info { color: #0dcaf0 !important; border: 1px solid #0dcaf0 !important; }
+    .alert-success { color: #198754 !important; border: 1px solid #198754 !important; }
+
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <h3 class="mb-4">Prihlásenie</h3>
+<div class="container d-flex justify-content-center">
+    <div class="login-container w-100">
+        <div class="card shadow-lg">
+            <div class="card-body text-center">
+                <h3 class="mb-4">Prihlásenie</h3>
 
-                    <div th:if="${param.error}" class="alert alert-danger">
-                        Nesprávne meno alebo heslo.
-                    </div>
-                    <div th:if="${param.logout}" class="alert alert-info">
-                        Boli ste odhlásený.
-                    </div>
-                    <div th:if="${param.success}" class="alert alert-success">
-                        Registrácia úspešná! Prihláste sa.
-                    </div>
+                <div th:if="${param.error}" class="alert alert-danger">
+                    Nesprávne meno alebo heslo.
+                </div>
+                <div th:if="${param.logout}" class="alert alert-info">
+                    Boli ste odhlásený.
+                </div>
+                <div th:if="${param.success}" class="alert alert-success">
+                    Registrácia úspešná!
+                </div>
 
-                    <form th:action="@{/login}" method="post">
-                        <div class="form-floating mb-3">
-                            <input type="text" name="email" class="form-control" id="email" placeholder="name@example.com" required>
-                            <label for="email">Email adresa</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" name="password" class="form-control" id="password" placeholder="Heslo" required>
-                            <label for="password">Heslo</label>
-                        </div>
-                        <button class="btn btn-lg btn-primary w-100" type="submit">Prihlásiť</button>
-                    </form>
+                <form th:action="@{/login}" method="post">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="email" class="form-control" id="email" placeholder="name@example.com" required>
+                        <label for="email">Email adresa</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" name="password" class="form-control" id="password" placeholder="Heslo" required>
+                        <label for="password">Heslo</label>
+                    </div>
+                    <button class="btn btn-primary w-100 mt-2" type="submit">Prihlásiť sa</button>
+                </form>
+
+                <div class="mt-4 small">
+                    <span class="text-muted">Ešte nemáte účet?</span>
+                    <a href="/registration" class="text-danger fw-bold text-decoration-none">Registrovať sa</a>
                 </div>
             </div>
         </div>

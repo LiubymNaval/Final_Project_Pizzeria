@@ -2,26 +2,75 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Pizzu Form')}"></head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; font-family: 'Segoe UI', sans-serif; }
+
+    h2 { color: #e63946 !important; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 30px; }
+    h5 { color: #e63946 !important; font-weight: bold; text-transform: uppercase; font-size: 1rem; }
+
+    .card { background-color: #1a1a1a !important; border: 1px solid #333 !important; border-radius: 12px !important; }
+    .border-info { border: 1px solid rgba(13, 202, 240, 0.3) !important; }
+
+    .form-label { color: #bbbbbb !important; font-weight: 600; margin-bottom: 5px; }
+    .form-control, .form-select {
+        background-color: #0f0f0f !important;
+        border: 1px solid #444 !important;
+        color: #ffffff !important;
+        border-radius: 8px;
+    }
+    .form-control:focus {
+        border-color: #e63946 !important;
+        box-shadow: 0 0 0 0.25rem rgba(230, 57, 70, 0.15) !important;
+    }
+    .form-control::placeholder { color: #555 !important; }
+
+    .form-check-input { background-color: #0f0f0f; border-color: #444; }
+    .form-check-input:checked { background-color: #e63946; border-color: #e63946; }
+    .form-check-label { color: #ffffff !important; cursor: pointer; }
+
+    .btn-primary { background-color: #e63946 !important; border: none !important; font-weight: bold; text-transform: uppercase; padding: 12px 30px; }
+    .btn-primary:hover { background-color: #ff4d5a !important; transform: translateY(-1px); }
+
+    .btn-secondary { background-color: #333 !important; border: none !important; font-weight: bold; text-transform: uppercase; padding: 12px 30px; }
+
+    .btn-info { background-color: #0dcaf0 !important; border: none !important; font-weight: bold; }
+
+    .ingredient-list {
+        max-height: 200px;
+        overflow-y: auto;
+        background: #0f0f0f;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #333;
+    }
+    .ingredient-list::-webkit-scrollbar { width: 6px; }
+    .ingredient-list::-webkit-scrollbar-track { background: #1a1a1a; }
+    .ingredient-list::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+
+    .alert-danger { background-color: rgba(230, 57, 70, 0.1) !important; border: 1px solid #e63946 !important; color: #ff4d4d !important; }
+    hr { border-top: 1px solid #333 !important; opacity: 1; }
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
         <span th:text="${errorMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+
     <h2 th:text="${pizza.id == null ? 'Pridať novú pizzu' : 'Upraviť pizzu'}">Form</h2>
 
     <div class="card mb-4 border-info">
         <div class="card-body">
-            <h5>Nahrať obrázok</h5>
+            <h5>Nahrať obrázok na server</h5>
             <form th:action="@{/admin/pizzas/upload-image}" method="post" enctype="multipart/form-data" class="row g-2">
                 <input type="hidden" name="pizzaId" th:value="${pizza.id}">
-
-                <div class="col-auto">
+                <div class="col-md-8">
                     <input type="file" name="imageFile" class="form-control" accept="image/*" required>
                 </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-info text-white">Nahrať na server</button>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-info text-dark w-100">Nahrať obrázok</button>
                 </div>
             </form>
         </div>
@@ -34,36 +83,37 @@
                 <ul class="mb-0 mt-1">
                     <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
                 </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
+
         <input type="hidden" th:field="*{id}">
 
         <div class="col-md-6">
             <label class="form-label">Názov pizze</label>
-            <input type="text" th:field="*{nazov}" class="form-control" required>
+            <input type="text" th:field="*{nazov}" class="form-control" required placeholder="napr. Margarita">
         </div>
 
         <div class="col-md-6">
             <label class="form-label">Slug (URL)</label>
-            <input type="text" th:field="*{slug}" class="form-control" placeholder="napr. sunkova-pizza" required>
+            <input type="text" th:field="*{slug}" class="form-control" placeholder="napr. margarita-pizza" required>
         </div>
 
         <div class="col-12">
-            <label class="form-label">Popis</label>
-            <textarea th:field="*{popis}" class="form-control" rows="3"></textarea>
+            <label class="form-label">Popis (Zloženie v menu)</label>
+            <textarea th:field="*{popis}" class="form-control" rows="3" placeholder="Krátky popis pizze pre zákazníka..."></textarea>
         </div>
 
         <div class="col-12">
             <label class="form-label">URL obrázka</label>
-            <div th:if="*{obrazokUrl}" class="mb-2">
-                <img th:src="*{obrazokUrl}" style="height: 100px; border-radius: 5px;" alt="Preview">
+            <div th:if="*{obrazokUrl}" class="mb-3">
+                <img th:src="*{obrazokUrl}" style="height: 120px; border: 2px solid #e63946; border-radius: 8px;" alt="Preview">
             </div>
             <input type="text" th:field="*{obrazokUrl}" class="form-control"
-                   placeholder="URL sa vyplní automaticky po nahratí alebo vložte manuálne">
+                   placeholder="URL sa vyplní automaticky alebo vložte manuálne">
         </div>
 
-        <div class="col-12"><hr><h5>Cenník (Povinné)</h5></div>
+        <div class="col-12 mt-4"><hr><h5>Cenník (Povinné)</h5></div>
 
         <div class="col-md-4">
             <label class="form-label">Malá (33cm) €</label>
@@ -83,49 +133,51 @@
                    th:value="${cenaVelka != null ? cenaVelka : (pizza.velkosti != null && pizza.velkosti.size() > 2 ? pizza.velkosti[2].cena : '')}">
         </div>
 
-        <div class="col-12"><hr></div>
+        <div class="col-12 mt-4"><hr></div>
 
         <div class="col-md-6">
-            <h5>Tagy (Kategórie)</h5>
-            <div class="row">
-                <div th:each="tag : ${allTags}" class="col-6 col-sm-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox"
-                               name="selectedTags"
-                               th:value="${tag.id}"
-                               th:id="'tag' + ${tag.id}"
-                               th:checked="${pizza.tagy != null && pizza.tagy.contains(tag)}">
-                        <label class="form-check-label" th:for="'tag' + ${tag.id}" th:text="${tag.nazov}"></label>
+            <h5 class="mb-3">Tagy (Kategórie)</h5>
+            <div class="ingredient-list">
+                <div class="row">
+                    <div th:each="tag : ${allTags}" class="col-12 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="selectedTags"
+                                   th:value="${tag.id}" th:id="'tag' + ${tag.id}"
+                                   th:checked="${pizza.tagy != null && pizza.tagy.contains(tag)}">
+                            <label class="form-check-label" th:for="'tag' + ${tag.id}" th:text="${tag.nazov}"></label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <h5>Ingrediencie (Zloženie)</h5>
-            <div class="row" style="max-height: 200px; overflow-y: auto;">
-                <div th:each="ing : ${allIngredients}" class="col-6 col-sm-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox"
-                               name="selectedIngredients"
-                               th:value="${ing.id}"
-                               th:id="'ing' + ${ing.id}"
-                               th:checked="${pizza.ingrediencie != null && pizza.ingrediencie.contains(ing)}">
-                        <label class="form-check-label" th:for="'ing' + ${ing.id}" th:text="${ing.nazov}"></label>
+            <h5 class="mb-3">Ingrediencie</h5>
+            <div class="ingredient-list">
+                <div class="row">
+                    <div th:each="ing : ${allIngredients}" class="col-12 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="selectedIngredients"
+                                   th:value="${ing.id}" th:id="'ing' + ${ing.id}"
+                                   th:checked="${pizza.ingrediencie != null && pizza.ingrediencie.contains(ing)}">
+                            <label class="form-check-label" th:for="'ing' + ${ing.id}" th:text="${ing.nazov}"></label>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-12 mt-3">
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" th:field="*{aktivna}">
-                <label class="form-check-label">Aktívna (zobrazená v menu)</label>
             </div>
         </div>
 
         <div class="col-12 mt-4">
-            <button type="submit" class="btn btn-primary btn-lg">Uložiť</button>
+            <div class="card p-3 border-danger shadow-sm">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" th:field="*{aktivna}" id="switchAktivna">
+                    <label class="form-check-label fw-bold" for="switchAktivna">Zobraziť pizzu v ponuke (Aktívna)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mt-5 mb-5 d-flex gap-3">
+            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">Uložiť pizzu</button>
             <a href="/admin/pizzas" class="btn btn-secondary btn-lg">Zrušiť</a>
         </div>
     </form>

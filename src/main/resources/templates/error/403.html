@@ -2,19 +2,87 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('403 - Prístup odmietnutý')}"></head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; }
+
+    .error-container {
+        min-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .error-code {
+        font-size: 10rem;
+        font-weight: 900;
+        color: #e63946;
+        text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
+        line-height: 1;
+        margin-bottom: 10px;
+    }
+
+    .lock-icon {
+        font-size: 5rem;
+        color: #e63946;
+        margin-bottom: 20px;
+        animation: lock-shake 2s infinite;
+    }
+
+    @keyframes lock-shake {
+        0%, 100% { transform: rotate(0deg); }
+        10%, 30%, 50% { transform: rotate(-5deg); }
+        20%, 40%, 60% { transform: rotate(5deg); }
+        70% { transform: rotate(0deg); }
+    }
+
+    .warning-box {
+        background-color: rgba(230, 57, 70, 0.05);
+        border: 1px solid rgba(230, 57, 70, 0.3);
+        padding: 15px 25px;
+        border-radius: 12px;
+        color: #adb5bd;
+        font-size: 0.9rem;
+        max-width: 450px;
+    }
+
+    .btn-pizza-red {
+        background-color: #e63946 !important;
+        border: none !important;
+        color: white !important;
+        font-weight: bold;
+        padding: 12px 30px;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+    .btn-pizza-red:hover {
+        background-color: #b91c1c !important;
+        transform: scale(1.05);
+    }
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
-<div class="container text-center mt-5">
-    <div class="py-5">
-        <h1 class="display-1 fw-bold text-danger">403</h1>
-        <h2>Prístup odmietnutý</h2>
-        <p class="lead">Na túto stránku nemáte potrebné oprávnenia.</p>
-        <div class="alert alert-light border shadow-sm d-inline-block">
-            Tento incident môže byť zaznamenaný.
-        </div>
-        <br>
-        <a href="/" class="btn btn-secondary mt-3">Návrat domov</a>
+
+<div class="container error-container text-center">
+    <div class="lock-icon">
+        <i class="bi bi-shield-lock-fill"></i>
     </div>
+
+    <div class="error-code">403</div>
+
+    <h2 class="text-uppercase fw-bold mb-3">Prístup odmietnutý</h2>
+    <p class="lead mb-4" style="color: #ccc;">Ľutujeme, ale na zobrazenie tejto stránky nemáte dostatočné oprávnenia.</p>
+
+    <div class="warning-box mx-auto mb-5 shadow-sm">
+        <i class="bi bi-info-circle me-2"></i>
+        Tento pokus o prístup môže byť zaznamenaný v našom bezpečnostnom systéme.
+    </div>
+
+    <a href="/" class="btn btn-pizza-red shadow-lg">
+        <i class="bi bi-house-door-fill me-2"></i> NÁVRAT NA HLAVNÚ STRÁNKU
+    </a>
 </div>
+
 <div th:replace="~{fragments/layout :: footer}"></div>
 </body>
 </html>

@@ -2,42 +2,109 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Správa používateľov')}"></head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; font-family: 'Segoe UI', sans-serif; }
+    h2 { color: #e63946 !important; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; }
+
+    .table-container { background-color: #1a1a1a; border-radius: 15px; padding: 20px; border: 1px solid #333; }
+    .table { color: #ffffff !important; border-color: #333 !important; }
+    .table tr, .table td, .table th { background-color: transparent !important; color: #ffffff !important; border-bottom: 1px solid #333 !important; padding: 15px !important; }
+    .table thead th { background-color: #252525 !important; color: #e63946 !important; border-bottom: 2px solid #e63946 !important; text-transform: uppercase; font-size: 0.8rem; }
+
+    .user-email { color: #ffffff !important; font-weight: bold; font-size: 1.1rem; }
+    .user-name { color: #bbbbbb !important; font-size: 0.9rem; }
+    .role-badge { background-color: rgba(230, 57, 70, 0.1) !important; color: #e63946 !important; border: 1px solid #e63946 !important; font-weight: bold; padding: 5px 10px; }
+    .badge-active { background-color: rgba(25, 135, 84, 0.1) !important; color: #198754 !important; border: 1px solid #198754; }
+    .badge-inactive { background-color: rgba(220, 53, 69, 0.1) !important; color: #dc3545 !important; border: 1px solid #dc3545; }
+
+    .form-select-sm { background-color: #000000 !important; border: 1px solid #444 !important; color: #ffffff !important; border-radius: 6px; }
+
+    .btn-save { background-color: transparent !important; border: 1px solid #0dcaf0 !important; color: #0dcaf0 !important; font-weight: bold; }
+    .btn-warning { background-color: #ffc107 !important; color: #000 !important; border: none !important; font-weight: bold; }
+    .btn-success { background-color: #198754 !important; color: #fff !important; border: none !important; font-weight: bold; }
+    .btn-danger { background-color: #bb2d3b !important; border: none !important; font-weight: bold; }
+
+    @media (max-width: 768px) {
+        .table-container { padding: 10px; border: none; background: transparent; }
+        .table thead { display: none; }
+
+        .table tr {
+            display: block;
+            background-color: #1a1a1a !important;
+            margin-bottom: 15px;
+            border: 1px solid #333 !important;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none !important;
+            padding: 8px 10px !important;
+            text-align: right;
+        }
+
+        .table td::before {
+            content: attr(data-label);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: #e63946;
+            text-align: left;
+        }
+
+        .actions-cell { display: block !important; text-align: center !important; }
+        .actions-cell .d-flex { flex-direction: column; gap: 10px !important; }
+        .actions-cell form, .actions-cell select, .actions-cell button { width: 100% !important; margin: 0 !important; }
+
+        .user-info-cell { flex-direction: column !important; align-items: flex-start !important; text-align: left !important; }
+    }
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
 <div class="container mt-4">
     <h2>Správa používateľov</h2>
-    <div class="table-responsive">
-        <table class="table table-bordered align-middle">
-            <thead class="table-light">
+
+    <div class="table-container shadow-lg">
+        <div class="table-responsive-none"> <table class="table table-hover align-middle">
+            <thead>
             <tr>
                 <th>ID</th>
-                <th>Email</th>
-                <th>Meno</th>
+                <th>Email / Meno</th>
                 <th>Rola</th>
-                <th>Status</th> <th>Akcie</th> </tr>
+                <th>Status</th>
+                <th class="text-center">Akcie</th>
+            </tr>
             </thead>
             <tbody>
             <tr th:each="u : ${users}">
-                <td th:text="${u.id}">1</td>
-                <td th:text="${u.email}">mail@mail.com</td>
-                <td th:text="${u.meno + ' ' + u.priezvisko}">Name</td>
-                <td>
-                    <span th:each="r : ${u.roly}" class="badge bg-secondary me-1" th:text="${r.nazov}">ROLE</span>
+                <td data-label="ID" class="text-muted" th:text="${u.id}">1</td>
+                <td data-label="Používateľ" class="user-info-cell">
+                    <div class="user-email" th:text="${u.email}">mail@mail.com</div>
+                    <div class="user-name" th:text="${u.meno + ' ' + u.priezvisko}">Name</div>
                 </td>
-                <td>
-                    <span th:if="${u.aktivny}" class="badge bg-success">Aktívny</span>
-                    <span th:unless="${u.aktivny}" class="badge bg-danger">Deaktivovaný</span>
+                <td data-label="Rola">
+                    <div>
+                        <span th:each="r : ${u.roly}" class="badge role-badge me-1" th:text="${r.nazov}">ROLE</span>
+                    </div>
                 </td>
-                <td>
+                <td data-label="Status">
+                    <span th:if="${u.aktivny}" class="badge badge-active">Aktívny</span>
+                    <span th:unless="${u.aktivny}" class="badge badge-inactive">Deaktivovaný</span>
+                </td>
+                <td class="actions-cell">
                     <div class="d-flex gap-2">
                         <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" class="d-flex">
-                            <select name="roleName" class="form-select form-select-sm me-1" style="width: auto;">
+                            <select name="roleName" class="form-select form-select-sm me-1">
                                 <option value="ROLE_ZAKAZNIK">Zákazník</option>
                                 <option value="ROLE_KUCHAR">Kuchár</option>
                                 <option value="ROLE_KURIER">Kuriér</option>
                                 <option value="ROLE_ADMIN">Admin</option>
                             </select>
-                            <button type="submit" class="btn btn-sm btn-outline-primary">Uložiť</button>
+                            <button type="submit" class="btn btn-sm btn-save">Uložiť</button>
                         </form>
 
                         <form th:action="@{/admin/users/{id}/toggle-status(id=${u.id})}" method="post">
@@ -56,6 +123,7 @@
             </tr>
             </tbody>
         </table>
+        </div>
     </div>
 
     <div th:if="${error}" class="alert alert-danger mt-3" th:text="${error}"></div>

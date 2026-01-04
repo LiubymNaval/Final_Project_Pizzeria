@@ -2,11 +2,108 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Môj Profil')}"></head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; font-family: 'Segoe UI', sans-serif; }
+
+    .img-thumbnail {
+        background-color: #1a1a1a !important;
+        border: 2px solid #e63946 !important;
+        padding: 5px;
+    }
+
+    h3 {
+        color: #ffffff !important;
+        font-weight: 800;
+        margin-top: 15px;
+    }
+
+    .badge.bg-info {
+        background-color: #333 !important;
+        color: #e63946 !important;
+        border: 1px solid #e63946 !important;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .card {
+        background-color: #1a1a1a !important;
+        border: 1px solid #333 !important;
+        border-radius: 12px !important;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background-color: #252525 !important;
+        border-bottom: 1px solid #333 !important;
+        color: #e63946 !important;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    label { color: #bbbbbb !important; font-size: 0.9rem; margin-bottom: 5px; }
+
+    .form-control {
+        background-color: #0f0f0f !important;
+        border: 1px solid #444 !important;
+        color: #ffffff !important;
+    }
+
+    .form-control:focus {
+        border-color: #e63946 !important;
+        background-color: #0f0f0f !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 0 0.25rem rgba(230, 57, 70, 0.15) !important;
+    }
+
+    .btn-primary {
+        background-color: #e63946 !important;
+        border: none !important;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 10px 20px;
+    }
+
+    .btn-primary:hover {
+        background-color: #ff4d5a !important;
+        transform: translateY(-1px);
+    }
+
+    .border-warning { border: 1px solid #e63946 !important; }
+    .bg-warning {
+        background-color: #e63946 !important;
+        color: #ffffff !important;
+        font-weight: bold !important;
+    }
+
+    .btn-outline-dark {
+        color: #ffffff !important;
+        border-color: #444 !important;
+    }
+
+    .btn-outline-dark:hover {
+        background-color: #e63946 !important;
+        border-color: #e63946 !important;
+    }
+
+    .alert-success {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+        color: #28a745 !important;
+        border: 1px solid #28a745 !important;
+    }
+
+    .alert-danger {
+        background-color: rgba(230, 57, 70, 0.1) !important;
+        color: #ff4d4d !important;
+        border: 1px solid #e63946 !important;
+    }
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-4 text-center">
+        <div class="col-md-4 text-center mb-4">
             <img th:src="${user.obrazokUrl != null && user.obrazokUrl != '' ? user.obrazokUrl : (fullUser != null && fullUser.obrazokUrl != '' ? fullUser.obrazokUrl : 'https://via.placeholder.com/150')}"
                  class="rounded-circle img-thumbnail mb-3" style="width: 150px; height: 150px; object-fit: cover;">
 
@@ -25,7 +122,7 @@
 
             <div class="card mb-4">
                 <div class="card-header">Upraviť údaje</div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form th:action="@{/profile/update}" th:object="${user}" method="post" enctype="multipart/form-data">
                         <input type="hidden" th:field="*{email}">
 
@@ -50,33 +147,32 @@
                                    th:classappend="${#fields.hasErrors('telefon')} ? 'is-invalid'">
                         </div>
                         <div class="mb-3">
-                            <label>Avatar</label>
+                            <label>Avatar (nový obrázok)</label>
                             <input type="file" name="imageFile" class="form-control mb-2" accept="image/*">
-
                             <input type="hidden" th:field="*{obrazokUrl}">
                         </div>
-                        <button type="submit" class="btn btn-primary">Uložiť zmeny</button>
+                        <button type="submit" class="btn btn-primary w-100 mt-2">Uložiť zmeny</button>
                     </form>
                 </div>
             </div>
 
             <div class="card border-warning mb-4">
-                <div class="card-header bg-warning text-dark">Zmena hesla</div>
-                <div class="card-body">
-                    <div th:if="${passwordError}" class="text-danger mb-2" th:text="${passwordError}"></div>
+                <div class="card-header bg-warning">Zmena hesla</div>
+                <div class="card-body p-4">
+                    <div th:if="${passwordError}" class="alert alert-danger mb-3" th:text="${passwordError}"></div>
 
                     <form th:action="@{/profile/change-password}" method="post">
                         <div class="input-group">
                             <input type="password" name="newPassword" class="form-control" placeholder="Nové heslo" required>
-                            <button class="btn btn-outline-dark" type="submit">Zmeniť</button>
+                            <button class="btn btn-outline-dark" type="submit">Zmeniť hesло</button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="text-end">
-                <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('Naozaj chcete zmazať účet?');">
-                    <button type="submit" class="btn btn-danger btn-sm">Zmazať účet</button>
+            <div class="text-end mb-5">
+                <form th:action="@{/profile/delete}" method="post" onsubmit="return confirm('Naozaj chcete zmazať účet? Táto akcia je nevratná!');">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Zmazať účet</button>
                 </form>
             </div>
         </div>

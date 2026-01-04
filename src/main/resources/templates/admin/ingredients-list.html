@@ -2,20 +2,48 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Správa ingrediencií')}"></head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; font-family: 'Segoe UI', sans-serif; }
+    h3 { color: #198754 !important; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+
+    .card { background-color: #1a1a1a !important; border: 1px solid #333 !important; border-radius: 12px !important; }
+    .card-header {
+        background-color: #252525 !important;
+        color: #198754 !important;
+        border-bottom: 2px solid #198754 !important;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .form-label { color: #ffffff !important; font-weight: bold; display: block; margin-bottom: 8px; }
+    .form-control {
+        background-color: #000000 !important;
+        border: 1px solid #444 !important;
+        color: #ffffff !important;
+    }
+    .form-control::placeholder { color: #888 !important; }
+    .form-control:focus { border-color: #198754 !important; box-shadow: none; color: #ffffff !important; }
+
+    .table tr, .table td, .table th { background-color: transparent !important; color: #ffffff !important; border-bottom: 1px solid #333 !important; }
+    .table thead th { color: #198754 !important; text-transform: uppercase; border-bottom: 2px solid #198754 !important; }
+
+    .btn-success { background-color: #198754 !important; border: none !important; font-weight: bold; }
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-success text-white">Pridať ingredienciu</div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header">Pridať ingredienciu</div>
                 <div class="card-body">
                     <form th:action="@{/admin/ingredients/add}" method="post">
                         <div class="mb-3">
-                            <label>Názov</label>
-                            <input type="text" name="nazov" class="form-control" required>
+                            <label class="form-label">Názov ingrediencie</label>
+                            <input type="text" name="nazov" class="form-control" placeholder="napr. Mozzarella" required>
                         </div>
-                        <button type="submit" class="btn btn-success w-100">Uložiť</button>
+                        <button type="submit" class="btn btn-success w-100 text-uppercase">Uložiť</button>
                     </form>
                 </div>
             </div>
@@ -23,30 +51,33 @@
 
         <div class="col-md-8">
             <h3>Zoznam ingrediencií</h3>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Názov</th>
-                    <th>Akcia</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="ing : ${ingredients}">
-                    <td th:text="${ing.id}">1</td>
-                    <td th:text="${ing.nazov}">Syr</td>
-                    <td>
-                        <form th:action="@{/admin/ingredients/delete/{id}(id=${ing.id})}" method="post">
-                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th style="width: 80px;">ID</th>
+                        <th>Názov</th>
+                        <th class="text-end">Akcia</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="ing : ${ingredients}">
+                        <td style="color: #666;" th:text="${ing.id}">1</td>
+                        <td style="font-weight: 600;" th:text="${ing.nazov}">Syr</td>
+                        <td class="text-end">
+                            <form th:action="@{/admin/ingredients/delete/{id}(id=${ing.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Zmazať ingredienciu?')">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-
 <div th:replace="~{fragments/layout :: footer}"></div>
 </body>
 </html>

@@ -2,20 +2,50 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Správa tagov')}"></head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; font-family: 'Segoe UI', sans-serif; }
+    h3 { color: #e63946 !important; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+
+    .card { background-color: #1a1a1a !important; border: 1px solid #333 !important; border-radius: 12px !important; }
+    .card-header {
+        background-color: #252525 !important;
+        color: #e63946 !important;
+        border-bottom: 2px solid #e63946 !important;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .form-label { color: #ffffff !important; font-weight: bold; display: block; margin-bottom: 8px; }
+    .form-control {
+        background-color: #000000 !important;
+        border: 1px solid #444 !important;
+        color: #ffffff !important;
+    }
+    .form-control::placeholder { color: #888 !important; }
+    .form-control:focus { border-color: #e63946 !important; box-shadow: none; color: #ffffff !important; }
+
+    .table tr, .table td, .table th { background-color: transparent !important; color: #ffffff !important; border-bottom: 1px solid #333 !important; }
+    .table thead th { color: #e63946 !important; text-transform: uppercase; border-bottom: 2px solid #e63946 !important; }
+
+    .tag-badge { background-color: rgba(230, 57, 70, 0.1) !important; color: #e63946 !important; border: 1px solid #e63946; padding: 5px 10px; }
+    .btn-primary { background-color: #e63946 !important; border: none !important; font-weight: bold; }
+    .btn-warning { background-color: #0dcaf0 !important; border: none !important; color: #000 !important; }
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-info text-white">Pridať Tag</div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header">Pridať Tag</div>
                 <div class="card-body">
                     <form th:action="@{/admin/tags/add}" method="post" th:object="${newTag}">
                         <div class="mb-3">
-                            <label>Názov tagu</label>
+                            <label class="form-label">Názov tagu</label>
                             <input type="text" th:field="*{nazov}" class="form-control" placeholder="napr. Pikantné" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Pridať</button>
+                        <button type="submit" class="btn btn-primary w-100 text-uppercase">Pridať</button>
                     </form>
                 </div>
             </div>
@@ -23,33 +53,36 @@
 
         <div class="col-md-8">
             <h3>Tagy</h3>
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Názov</th>
-                    <th>Akcie</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="tag : ${tags}">
-                    <td th:text="${tag.id}"></td>
-                    <td><span class="badge bg-secondary" th:text="${tag.nazov}">Tag</span></td>
-                    <td>
-                        <a th:href="@{/admin/tags/edit/{id}(id=${tag.id})}" class="btn btn-sm btn-warning">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <form th:action="@{/admin/tags/delete/{id}(id=${tag.id})}" method="post" style="display:inline;">
-                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th style="width: 80px;">ID</th>
+                        <th>Názov</th>
+                        <th class="text-end">Akcie</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="tag : ${tags}">
+                        <td style="color: #666;" th:text="${tag.id}"></td>
+                        <td><span class="badge tag-badge" th:text="${tag.nazov}">Tag</span></td>
+                        <td class="text-end">
+                            <a th:href="@{/admin/tags/edit/{id}(id=${tag.id})}" class="btn btn-sm btn-warning me-1">
+                                <i class="bi bi-pencil-fill"></i>
+                            </a>
+                            <form th:action="@{/admin/tags/delete/{id}(id=${tag.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Zmazať tag?')">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-
 <div th:replace="~{fragments/layout :: footer}"></div>
 </body>
 </html>

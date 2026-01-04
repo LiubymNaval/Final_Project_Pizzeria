@@ -2,23 +2,79 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('500 - Interná chyba')}"></head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; }
+
+    .error-container {
+        min-height: 70vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .error-code {
+        font-size: 10rem;
+        font-weight: 900;
+        color: #e63946;
+        text-shadow: 5px 5px 0px rgba(255, 255, 255, 0.1);
+        line-height: 1;
+        margin-bottom: 10px;
+        letter-spacing: -5px;
+    }
+
+    .error-icon {
+        font-size: 4rem;
+        color: #e63946;
+        margin-bottom: 20px;
+    }
+
+    .btn-pizza-red {
+        background-color: #e63946 !important;
+        border: none !important;
+        color: white !important;
+        font-weight: bold;
+        padding: 12px 30px;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+    .btn-pizza-red:hover {
+        background-color: #b91c1c !important;
+        transform: translateY(-2px);
+    }
+
+    .message-box {
+        max-width: 500px;
+        border-left: 4px solid #e63946;
+        padding: 20px;
+        background: #1a1a1a;
+        border-radius: 4px 15px 15px 4px;
+    }
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
-<div class="container text-center mt-5">
-    <div class="py-5">
-        <h1 class="display-1 fw-bold text-muted">500</h1>
-        <h2>Niečo sa pokazilo</h2>
-        <p class="lead">Ospravedlňujeme sa, na našom serveri nastala neočakávaná chyba.</p>
 
-        <div class="card bg-light mx-auto mt-4" style="max-width: 600px;">
-            <div class="card-body">
-                <p class="card-title fw-bold text-danger">Technické detaily:</p>
-                <code class="text-dark" th:text="${message}">Detail chyby...</code>
-            </div>
-        </div>
+<div class="container error-container text-center">
+    <div class="error-code">500</div>
 
-        <a href="/" class="btn btn-warning mt-4">Skúsiť znova na hlavnej stránke</a>
+    <div class="error-icon">
+        <i class="bi bi-exclamation-octagon-fill"></i>
     </div>
+
+    <h2 class="text-uppercase fw-bold mb-3">Niečo sa pokazilo</h2>
+
+    <div class="message-box mx-auto mb-4 shadow-lg">
+        <p class="mb-0">
+            Ospravedlňujeme sa, ale na serveri došlo k chybe.
+            Náš tím bol informovaný и už na tom pracujeme.
+        </p>
+    </div>
+
+    <a href="/" class="btn btn-pizza-red shadow">
+        <i class="bi bi-house-door-fill me-2"></i> SPÄŤ NA HLAVNÚ STRÁNKU
+    </a>
 </div>
+
 <div th:replace="~{fragments/layout :: footer}"></div>
 </body>
 </html>

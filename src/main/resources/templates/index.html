@@ -1,75 +1,142 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/layout :: head('Menu')}"></head>
+<style>
+    .search-input {
+        background-color: #1e1e1e !important;
+        border: 1px solid #333 !important;
+        color: white !important;
+    }
+    .search-input:focus {
+        border-color: #e63946 !important;
+        box-shadow: 0 0 0 0.25rem rgba(230, 57, 70, 0.25) !important;
+    }
+
+    .pizza-card {
+        background-color: #1e1e1e;
+        border: 1px solid #333;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+        overflow: hidden;
+    }
+    .pizza-card:hover {
+        transform: translateY(-10px);
+        border-color: #e63946;
+    }
+    .pizza-card img {
+        transition: transform 0.5s ease;
+    }
+    .pizza-card:hover img {
+        transform: scale(1.1);
+    }
+
+    .card-title {
+        color: #e63946;
+        font-weight: bold;
+    }
+
+    .pizza-description-short {
+        color: #cecece !important;
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        background-color: #1e1e1e;
+        border: 1px solid #e63946;
+        color: white;
+    }
+    .modal-header { border-bottom: 1px solid #333; }
+    .modal-footer { border-top: 1px solid #333; }
+
+    .form-select, .form-control {
+        background-color: #252525;
+        border: 1px solid #444;
+        color: white;
+    }
+    .form-select:focus, .form-control:focus {
+        background-color: #2d2d2d;
+        color: white;
+        border-color: #e63946;
+    }
+</style>
 <body>
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-md-6 mx-auto">
+<div class="container mt-4">
+    <div class="row mb-5">
+        <div class="col-md-6 mx-auto text-center">
+            <h2 class="mb-4 text-uppercase fw-bold"><i class="bi bi-search text-danger"></i> Vyberte si pizzu</h2>
             <form th:action="@{/search}" method="get" class="d-flex">
-                <input class="form-control me-2" type="search" name="query" placeholder="Hľadať pizzu (názov, tag)..." aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Hľadať</button>
+                <input class="form-control search-input me-2 py-2" type="search" name="query" placeholder="Hľadať pizzu (názov, tag)...">
+                <button class="btn btn-pizza-red px-4" type="submit">Hľadať</button>
             </form>
         </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         <div class="col" th:each="pizza : ${pizzas}">
-            <div class="card h-100 shadow-sm">
-                <img th:src="${pizza.obrazokUrl != null && pizza.obrazokUrl != '' ? pizza.obrazokUrl : 'https://via.placeholder.com/300x200?text=No+Image'}"
-                     class="card-img-top" alt="Pizza Image" style="height: 200px; object-fit: cover;">
-
-                <div class="card-body">
-                    <h5 class="card-title" th:text="${pizza.nazov}">Pizza Name</h5>
-
-                    <div class="mb-2">
-                        <span th:each="tag : ${pizza.tagy}" class="badge bg-secondary me-1" th:text="${tag.nazov}">Tag</span>
-                    </div>
-
-                    <p class="card-text text-muted" th:text="${#strings.abbreviate(pizza.popis, 100)}">Description...</p>
-
-                    <h6 class="text-primary fw-bold" th:if="${!pizza.velkosti.isEmpty()}">
-                        Cena od: <span th:text="${pizza.velkosti[0].cena} + ' €'">0.00 €</span>
-                    </h6>
+            <div class="card pizza-card h-100 shadow">
+                <div style="overflow: hidden;">
+                    <img th:src="${pizza.obrazokUrl != null && pizza.obrazokUrl != '' ? pizza.obrazokUrl : 'https://via.placeholder.com/300x200?text=No+Image'}"
+                         class="card-img-top" alt="Pizza Image" style="height: 220px; object-fit: cover;">
                 </div>
 
-                <div class="card-footer bg-white border-top-0 d-flex justify-content-between align-items-center">
-                    <a th:href="@{'/pizza/' + ${pizza.slug}}" class="btn btn-sm btn-outline-primary">Detaily</a>
+                <div class="card-body">
+                    <h5 class="card-title text-uppercase" th:text="${pizza.nazov}">Pizza Name</h5>
 
-                    <button class="btn btn-sm btn-success" data-bs-toggle="modal" th:data-bs-target="'#cartModal'+${pizza.id}">
+                    <div class="mb-2">
+                        <span th:each="tag : ${pizza.tagy}"
+                              class="badge bg-danger me-1"
+                              th:text="${tag.nazov}">Tag</span>
+                    </div>
+
+                    <p class="pizza-description-short" th:text="${#strings.abbreviate(pizza.popis, 80)}">Description...</p>
+
+                    <h5 class="text-white fw-bold mt-3">
+                        <span class="text-secondary fs-6 fw-normal">od</span>
+                        <span th:text="${pizza.velkosti[0].cena} + ' €'">0.00 €</span>
+                    </h5>
+                </div>
+
+                <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between pb-3">
+                    <a th:href="@{'/pizza/' + ${pizza.slug}}" class="btn btn-sm btn-outline-light">
+                        <i class="bi bi-info-circle"></i> Detaily
+                    </a>
+
+                    <button class="btn btn-sm btn-pizza-red" data-bs-toggle="modal" th:data-bs-target="'#cartModal'+${pizza.id}">
                         <i class="bi bi-cart-plus"></i> Do košíka
                     </button>
                 </div>
             </div>
 
             <div class="modal fade" th:id="'cartModal'+${pizza.id}" tabindex="-1">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <form th:action="@{/cart/add}" method="post">
                             <div class="modal-header">
-                                <h5 class="modal-title" th:text="${pizza.nazov}"></h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                <h5 class="modal-title text-danger fw-bold" th:text="${pizza.nazov}"></h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <p>Vyberte veľkosť:</p>
-                                <select name="velkostId" class="form-select">
+                                <label class="mb-2">Vyberte veľkosť:</label>
+                                <select name="velkostId" class="form-select mb-3">
                                     <option th:each="v : ${pizza.velkosti}"
                                             th:value="${v.id}"
                                             th:text="${v.nazovVelkosti + ' (' + v.cena + ' €)'}">
                                     </option>
                                 </select>
                                 <input type="hidden" name="pizzaId" th:value="${pizza.id}">
-                                <input type="number" name="mnozstvo" value="1" min="1" class="form-control mt-2" placeholder="Množstvo">
+
+                                <label class="mb-2">Množstvo:</label>
+                                <input type="number" name="mnozstvo" value="1" min="1" max="10" class="form-control">
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary">Pridať</button>
+                                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Zrušiť</button>
+                                <button type="submit" class="btn btn-pizza-red px-4">Pridať do košíka</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>

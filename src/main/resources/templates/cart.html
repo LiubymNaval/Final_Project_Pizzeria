@@ -1,93 +1,238 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Váš košík')}"></head>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; font-family: 'Segoe UI', sans-serif; }
+
+    .cart-container {
+        background-color: #1a1a1a;
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid #333;
+    }
+
+    .table { color: #ffffff !important; background-color: transparent !important; }
+    .table thead th {
+        border-bottom: 2px solid #e63946 !important;
+        color: #e63946 !important;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        background-color: transparent !important;
+        padding-bottom: 15px;
+    }
+    .table td {
+        border-bottom: 1px solid #333 !important;
+        padding: 1.5rem 0.75rem;
+        color: #ffffff !important;
+        background-color: transparent !important;
+    }
+
+    .summary-card {
+        background-color: #151515;
+        border: 1px solid #e63946;
+        border-radius: 12px;
+        color: white;
+    }
+
+    .form-control {
+        background-color: #252525 !important;
+        border: 1px solid #444 !important;
+        color: #ffffff !important;
+    }
+
+    .form-control::placeholder {
+        color: #888888 !important;
+        opacity: 1 !important;
+    }
+    .form-control:-ms-input-placeholder { color: #888888 !important; }
+    .form-control::-ms-input-placeholder { color: #888888 !important; }
+
+    .form-control:focus {
+        background-color: #2d2d2d !important;
+        border-color: #e63946 !important;
+        box-shadow: 0 0 0 0.25rem rgba(230, 57, 70, 0.25) !important;
+        color: #ffffff !important;
+    }
+
+    .btn-pizza-red {
+        background-color: #e63946 !important;
+        color: white !important;
+        font-weight: bold;
+        border: none;
+        transition: 0.3s;
+    }
+    .btn-pizza-red:hover { background-color: #c12a36 !important; transform: translateY(-2px); }
+    .btn-pizza-red:disabled { background-color: #555 !important; cursor: not-allowed; }
+
+    .btn-delete { color: #888; transition: 0.3s; text-decoration: none; }
+    .btn-delete:hover { color: #e63946; transform: scale(1.1); }
+
+    .badge-outline { border: 1px solid #555; color: #ccc; background: transparent; }
+    .alert-custom-dark { background-color: #2d1a1a; border: 1px solid #e63946; color: #ffbaba; }
+
+    @media (max-width: 768px) {
+        .cart-container { padding: 10px; border: none; background: transparent; }
+        .table thead { display: none; }
+
+        .table tr {
+            display: block;
+            background-color: #1e1e1e !important;
+            margin-bottom: 1.5rem;
+            border: 1px solid #333 !important;
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+        }
+
+        .table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: none !important;
+            padding: 8px 0 !important;
+        }
+
+        .item-name-cell {
+            display: block !important;
+            border-bottom: 1px solid #333 !important;
+            padding-bottom: 10px !important;
+            margin-bottom: 10px;
+        }
+
+        .table td::before {
+            content: attr(data-label);
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .item-name-cell::before, .delete-cell::before { display: none; }
+
+        .delete-cell {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 0 !important;
+        }
+
+        .item-inactive { border-color: #e63946 !important; opacity: 0.8; }
+    }
+</style>
 <body>
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
-<div class="container mt-4">
-    <h2>🛒 Nákupný košík</h2>
+<div class="container mt-4 mb-5">
+    <h2 class="fw-bold text-uppercase mb-4 text-center text-md-start">
+        <i class="bi bi-cart3 text-danger"></i> Váš košík
+    </h2>
 
-    <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" class="alert alert-warning mt-3">
-        Váš košík je prázdny. <a href="/">Späť na menu</a>.
-    </div>
-    <div th:if="${param.error}" class="alert alert-danger mt-3" th:text="${param.error}">
-        Chyba pri objednávke
+    <div th:if="${cartItems == null || #lists.isEmpty(cartItems)}" class="alert alert-custom-dark mt-3 d-flex align-items-center shadow">
+        <i class="bi bi-exclamation-triangle me-3 fs-4"></i>
+        <div>
+            Váš košík je prázdny. <a href="/" class="text-danger fw-bold text-decoration-none">Späť na menu</a>.
+        </div>
     </div>
 
     <div th:if="${cartItems != null && !#lists.isEmpty(cartItems)}">
-        <div class="row">
-            <div class="col-md-8">
-                <table class="table align-middle">
-                    <thead>
-                    <tr>
-                        <th>Pizza</th>
-                        <th>Veľkosť</th>
-                        <th>Cena/ks</th>
-                        <th>Množstvo</th>
-                        <th>Spolu</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="item : ${cartItems}" th:classappend="${!item.pizzaVelkost.pizza.aktivna} ? 'table-danger' : ''">
-                        <td>
-                            <strong th:text="${item.pizzaVelkost.pizza.nazov}">Margarita</strong>
-                            <div th:if="${!item.pizzaVelkost.pizza.aktivna}">
-                                <span class="badge bg-danger">Momentálne nedostupné</span>
-                            </div>
-                        </td>
-                        <td th:text="${item.pizzaVelkost.nazovVelkosti}">33cm</td>
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="cart-container shadow">
+                    <div class="table-responsive-none">
+                        <table class="table align-middle">
+                            <thead>
+                            <tr>
+                                <th>Pizza</th>
+                                <th>Veľkosť</th>
+                                <th>Cena/ks</th>
+                                <th>Množstvo</th>
+                                <th>Spolu</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${cartItems}" th:classappend="${!item.pizzaVelkost.pizza.aktivna} ? 'item-inactive' : ''">
+                                <td class="item-name-cell">
+                                    <strong class="fs-5 text-white d-block" th:text="${item.pizzaVelkost.pizza.nazov}">Margarita</strong>
+                                    <div th:if="${!item.pizzaVelkost.pizza.aktivna}" class="mt-1">
+                                        <span class="badge bg-danger text-uppercase" style="font-size: 0.7rem;">Nedostupné</span>
+                                    </div>
+                                </td>
 
-                        <td>
-                            <span th:if="${item.pizzaVelkost.pizza.aktivna}" th:text="${item.pizzaVelkost.cena} + ' €'">5.00 €</span>
-                            <span th:unless="${item.pizzaVelkost.pizza.aktivna}">-</span>
-                        </td>
+                                <td data-label="Veľkosť">
+                                    <span class="badge badge-outline px-3" th:text="${item.pizzaVelkost.nazovVelkosti}">33cm</span>
+                                </td>
 
-                        <td>
-                            <span class="badge bg-light text-dark border" th:text="${item.mnozstvo}">1</span>
-                        </td>
+                                <td data-label="Cena/ks" class="text-white">
+                                    <span th:text="${item.pizzaVelkost.pizza.aktivna ? item.pizzaVelkost.cena + ' €' : '-'}">5.00 €</span>
+                                </td>
 
-                        <td class="fw-bold">
-                        <span th:if="${item.pizzaVelkost.pizza.aktivna}"
-                        th:text="${#numbers.formatDecimal(item.pizzaVelkost.cena * item.mnozstvo, 1, 2)} + ' €'">10.00 €</span>
-                            <span th:unless="${item.pizzaVelkost.pizza.aktivna}">0.00 €</span>
-                        </td>
+                                <td data-label="Množstvo">
+                                    <span class="badge bg-dark border border-danger px-3 py-2 fs-6" th:text="${item.mnozstvo}">1</span>
+                                </td>
 
-                        <td>
-                            <a th:href="@{/cart/delete/{id}(id=${item.id})}" class="text-danger" title="Odstrániť"><i class="bi bi-x-lg"></i></a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                                <td data-label="Spolu" class="fw-bold text-danger fs-5">
+                                    <span th:if="${item.pizzaVelkost.pizza.aktivna}"
+                                          th:text="${#numbers.formatDecimal(item.pizzaVelkost.cena * item.mnozstvo, 1, 2)} + ' €'">10.00 €</span>
+                                    <span th:unless="${item.pizzaVelkost.pizza.aktivna}">0.00 €</span>
+                                </td>
+
+                                <td class="text-end delete-cell">
+                                    <a th:href="@{/cart/delete/{id}(id=${item.id})}" class="btn-delete" title="Odstrániť">
+                                        <i class="bi bi-trash3 fs-4"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card bg-light">
-                    <div class="card-body">
-                        <h4>Spolu: <span class="text-primary" th:text="${totalPrice} + ' €'">0.00 €</span></h4>
-                        <hr>
+            <div class="col-lg-4">
+                <div class="card summary-card shadow-lg sticky-top" style="top: 2rem;">
+                    <div class="card-body p-4">
+                        <h4 class="mb-4 text-uppercase fw-bold border-bottom border-secondary pb-2">Súhrn</h4>
+
+                        <div class="d-flex justify-content-between mb-2 text-secondary">
+                            <span>Medzisúčet:</span>
+                            <span th:text="${totalPrice} + ' €'">0.00 €</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-4 fs-4 fw-bold border-top border-secondary pt-3">
+                            <span>Celkom:</span>
+                            <span class="text-danger" th:text="${totalPrice} + ' €'">0.00 €</span>
+                        </div>
 
                         <form th:action="@{/checkout}" method="post">
                             <div class="mb-3">
-                                <label class="form-label">Adresa doručenia</label>
-                                <textarea name="adresa" class="form-control" rows="2" required placeholder="Ulica, Číslo, Mesto"></textarea>
+                                <label class="form-label small text-uppercase fw-bold text-danger">Adresa doručenia</label>
+                                <textarea name="adresa"
+                                          class="form-control"
+                                          rows="2"
+                                          required
+                                          placeholder="Ulica, Číslo domu, Mesto"></textarea>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Poznámka pre kuchyňu</label>
-                                <input type="text" name="poznamka" class="form-control" placeholder="Napr. bez cibule">
+
+                            <div class="mb-4">
+                                <label class="form-label small text-uppercase fw-bold text-secondary">Poznámka</label>
+                                <input type="text"
+                                       name="poznamka"
+                                       class="form-control"
+                                       placeholder="Napr. kód od brány, poschodie">
                             </div>
 
                             <button type="submit"
-                                    class="btn btn-success w-100 btn-lg"
+                                    class="btn btn-pizza-red w-100 btn-lg py-3 shadow"
                                     th:disabled="${hasInactiveItems}">
-                                Objednať záväzne
+                                POTVRDIŤ OBJEDNÁVKU
                             </button>
 
-                            <p th:if="${hasInactiveItems}" class="text-danger small mt-2">
-                                Niektoré položky v košíku už nie sú dostupné. Odstráňte ich, aby ste mohli pokračovať.
-                            </p>
+                            <div th:if="${hasInactiveItems}" class="alert alert-danger small mt-3 border-0 bg-transparent text-danger p-0 d-flex align-items-center">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <span>Niektoré položky sú nedostupné.</span>
+                            </div>
                         </form>
-
                     </div>
                 </div>
             </div>

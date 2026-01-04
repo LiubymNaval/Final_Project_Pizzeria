@@ -1,16 +1,77 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('404 - Nenájdené')}"></head>
+<head th:replace="~{fragments/layout :: head('404 - Stránka nenájdená')}"></head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; font-family: 'Segoe UI', sans-serif; }
+
+    .error-container {
+        min-height: 75vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .error-code {
+        font-size: 12rem;
+        font-weight: 900;
+        color: #e63946;
+        line-height: 0.8;
+        margin-bottom: 20px;
+        letter-spacing: -5px;
+    }
+
+    .error-title {
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin-bottom: 15px;
+    }
+
+    .sub-text {
+        color: #888;
+        max-width: 500px;
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+    }
+
+    .btn-pizza-red {
+        background-color: #e63946 !important;
+        border: none !important;
+        color: white !important;
+        font-weight: bold;
+        padding: 14px 35px;
+        border-radius: 8px;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .btn-pizza-red:hover {
+        background-color: #b91c1c !important;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(230, 57, 70, 0.2);
+    }
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
-<div class="container text-center mt-5">
-    <div class="py-5">
-        <h1 class="display-1 fw-bold text-warning">404</h1>
-        <h2>Ups! Stránka sa nenašla</h2>
-        <p class="lead">Vyzerá to tak, že hľadaná pizza alebo stránka neexistuje.</p>
-        <a href="/" class="btn btn-warning btn-lg mt-3">Späť na hlavné menu</a>
-    </div>
+
+<div class="container error-container text-center">
+    <div class="error-code">404</div>
+
+    <h2 class="error-title">Stránka nebola nájdená</h2>
+
+    <p class="sub-text mx-auto">
+        Požadovaná stránka neexistuje alebo bola presunutá na inú adresu.
+        Skontrolujte prosím zadanú URL adresu alebo sa vráťte na hlavnú ponuku.
+    </p>
+
+    <a href="/" class="btn btn-pizza-red shadow">
+        <i class="bi bi-house-door me-2"></i> Späť na hlavnú stránku
+    </a>
 </div>
+
 <div th:replace="~{fragments/layout :: footer}"></div>
 </body>
 </html>

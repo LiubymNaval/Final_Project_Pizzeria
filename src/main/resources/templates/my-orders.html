@@ -1,37 +1,135 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head('Moje Objednávky')}"></head>
+<head th:replace="~{fragments/layout :: head('Moje Objednávky')}">
+</head>
 <body>
+<style>
+    body { background-color: #0f0f0f !important; color: #ffffff !important; }
+
+    .container h2 {
+        color: #e63946 !important;
+        font-weight: bold;
+    }
+
+    .accordion,
+    .accordion-item,
+    .accordion-button,
+    .accordion-header,
+    .accordion-collapse {
+        background-color: #1a1a1a !important;
+        color: #ffffff !important;
+        border-color: #333 !important;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #252525 !important;
+        color: #e63946 !important;
+    }
+
+    .order-date {
+        color: #cccccc !important;
+        font-size: 0.85rem;
+    }
+
+    .order-price {
+        color: #e63946 !important;
+        font-weight: bold;
+    }
+
+    .st-CAKAJUCA { color: #ffffff !important; font-weight: bold; }
+    .st-PRIPRAVUJE_SA, .st-PRIPRAVENA { color: #0dcaf0 !important; font-weight: bold; }
+    .st-DORUCUJE_SA { color: #ffc107 !important; font-weight: bold; }
+    .st-DODANA, .st-DORUCENA { color: #198754 !important; font-weight: bold; }
+    .st-ZRUSENA { color: #e63946 !important; font-weight: bold; }
+
+    .courier-info {
+        background: rgba(255, 193, 7, 0.05) !important;
+        border: 1px solid #ffc107 !important;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .courier-label {
+        color: #e63946 !important;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+    }
+    .courier-name-text {
+        color: #e63946 !important;
+        font-weight: bold;
+    }
+
+    .courier-icon { font-size: 2rem; margin-right: 15px; }
+    .phone-icon { color: #ffc107; margin-right: 5px; }
+
+    .accordion-button::after { filter: invert(1) brightness(2); }
+
+    .item-name-red {
+        color: #e63946 !important;
+    }
+
+    .list-group-item {
+        background-color: transparent !important;
+        border-bottom: 1px solid #333 !important;
+    }
+</style>
+
 <nav th:replace="~{fragments/layout :: header}"></nav>
 
 <div class="container mt-4">
     <h2>História objednávok</h2>
 
-    <div th:if="${orders.isEmpty()}" class="alert alert-info">
-        Zatiaľ nemáte žiadne objednávky. <a href="/">Vyberte si pizzu!</a>
+    <div th:if="${orders.isEmpty()}" class="alert alert-dark border-secondary text-white">
+        Zatiaľ nemáte žiadne objednávky. <a href="/" class="text-danger fw-bold">Vyberte si pizzu!</a>
     </div>
 
     <div class="accordion mt-3" id="ordersAccordion">
         <div class="accordion-item" th:each="order : ${orders}">
-            <h2 class="accordion-header" th:id="'heading'+${order.id}">
+            <h2 class="accordion-header">
                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         th:data-bs-target="'#collapse'+${order.id}">
-                    <span class="me-3 fw-bold">#<span th:text="${order.id}"></span></span>
-                    <span class="me-3" th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">Date</span>
-                    <span class="badge bg-primary me-auto" th:text="${order.stav}">STAV</span>
-                    <span class="fw-bold text-success" th:text="${order.celkovaCena} + ' €'">20 €</span>
+                    <div class="d-flex w-100 align-items-center">
+                        <span class="me-3 fw-bold" style="color: #e63946;">#<span th:text="${order.id}"></span></span>
+
+                        <span class="me-3 order-date" th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">Date</span>
+
+                        <span class="me-auto text-uppercase small"
+                              th:classappend="'st-' + ${order.stav.name()}"
+                              th:text="${order.stav}">STAV</span>
+
+                        <span class="order-price me-3" th:text="${order.celkovaCena} + ' €'">20 €</span>
+                    </div>
                 </button>
             </h2>
             <div th:id="'collapse'+${order.id}" class="accordion-collapse collapse" data-bs-parent="#ordersAccordion">
                 <div class="accordion-body">
+
+                    <div class="courier-info d-flex align-items-center" th:if="${order.stav.name() == 'DORUCUJE_SA' and order.kurier != null}">
+                        <div class="courier-icon">🚗</div>
+                        <div>
+                            <div class="courier-label">Váš kuriér:</div>
+                            <div class="courier-name-text fs-5">
+                                <span th:text="${order.kurier.meno}">Meno</span>
+                                <span th:text="${order.kurier.priezvisko}">Priezvisko</span>
+                            </div>
+                            <div style="color: #ffc107; font-weight: bold;">
+                                <span class="phone-icon">📱</span> <span th:text="${order.kurier.telefon}">+421...</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" th:each="item : ${order.polozky}">
                             <div class="d-flex justify-content-between">
-                                <span><strong th:text="${item.mnozstvo} + 'x'">1x</strong> <span th:text="${item.archivnyNazov}">Pizza</span></span>
-                                <span th:text="${item.archivnaCena * item.mnozstvo} + ' €'">10 €</span>
+                                <span>
+                                    <strong class="text-danger" th:text="${item.mnozstvo} + 'x'">1x</strong>
+                                    <span class="item-name-red" th:text="${item.archivnyNazov}">Pizza</span>
+                                </span>
+                                <span class="order-price" th:text="${item.archivnaCena * item.mnozstvo} + ' €'">10 €</span>
                             </div>
                         </li>
                     </ul>
+
                     <div class="mt-3 text-end" th:if="${order.stav.name() == 'CAKAJUCA'}">
                         <form th:action="@{/my-orders/cancel/{id}(id=${order.id})}" method="post" onsubmit="return confirm('Zrušiť objednávku?');">
                             <button type="submit" class="btn btn-outline-danger btn-sm">Zrušiť objednávku</button>
