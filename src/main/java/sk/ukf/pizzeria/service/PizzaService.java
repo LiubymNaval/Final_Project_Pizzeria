@@ -27,8 +27,6 @@ public class PizzaService {
 
     @Autowired
     private PizzaRepository pizzaRepository;
-    @Autowired
-    private PizzaVelkostRepository pizzaVelkostRepository;
 
     // Získanie všetkých aktívnych pízz pre menu
     public Page<Pizza> getAllActivePizzas(Pageable pageable) {

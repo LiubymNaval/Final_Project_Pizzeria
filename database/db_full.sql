@@ -263,12 +263,12 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 USE `Pizzeria`;
 
 -- "123456789Password"
-INSERT INTO Pouzivatel (meno, priezvisko, email, heslo, telefon) 
-VALUES ('Liubym', 'Naval', 'admin@gmail.sk', '$2a$10$jZJjE6jzXZMtAgGKN9VZH.VCCJpzwsXh0kGZDxlrQ9tRzvPEugEYq', '+4219012345678');
-INSERT INTO Pouzivatel (meno, priezvisko, email, heslo, telefon) 
+INSERT INTO Pouzivatel (meno, priezvisko, email, heslo, telefon, obrazok_url) 
+VALUES ('Liubym', 'Naval', 'admin@gmail.sk', '$2a$10$jZJjE6jzXZMtAgGKN9VZH.VCCJpzwsXh0kGZDxlrQ9tRzvPEugEYq', '+421901234567','/uploads/User.jpg');
+INSERT INTO Pouzivatel (meno, priezvisko, email, heslo, telefon, obrazok_url) 
 VALUES 
-('Peter', 'Kuchár', 'kuchar@gmail.sk', '$2a$10$jZJjE6jzXZMtAgGKN9VZH.VCCJpzwsXh0kGZDxlrQ9tRzvPEugEYq', '+421902111222'),
-('Michal', 'Kuriér', 'kurier@gmail.sk', '$2a$10$jZJjE6jzXZMtAgGKN9VZH.VCCJpzwsXh0kGZDxlrQ9tRzvPEugEYq', '+421903333444');
+('Peter', 'Kuchár', 'kuchar@gmail.sk', '$2a$10$jZJjE6jzXZMtAgGKN9VZH.VCCJpzwsXh0kGZDxlrQ9tRzvPEugEYq', '+421902111222','/uploads/User.jpg'),
+('Michal', 'Kuriér', 'kurier@gmail.sk', '$2a$10$jZJjE6jzXZMtAgGKN9VZH.VCCJpzwsXh0kGZDxlrQ9tRzvPEugEYq', '+421903333444','/uploads/User.jpg');
 
 INSERT INTO Rola (nazov) VALUES ('ROLE_ZAKAZNIK'), ('ROLE_KUCHAR'), ('ROLE_KURIER'), ('ROLE_ADMIN');
 

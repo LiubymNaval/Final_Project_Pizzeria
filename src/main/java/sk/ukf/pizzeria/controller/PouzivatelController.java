@@ -39,9 +39,9 @@ public class PouzivatelController {
     }
 
     @PostMapping("/profile/update")
-    public String updateProfile(Principal principal,
-                                @Valid @ModelAttribute("user") ProfilDto profilDto,
+    public String updateProfile(@Valid @ModelAttribute("user") ProfilDto profilDto,
                                 BindingResult result,
+                                Principal principal,
                                 @RequestParam("imageFile") MultipartFile imageFile,
                                 Model model) throws IOException {
 

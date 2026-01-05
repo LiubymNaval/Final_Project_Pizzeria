@@ -17,7 +17,7 @@ public class RegistraciaDto {
     private String email;
 
     @NotBlank(message = "Telefónne číslo je povinné")
-    @Pattern(regexp = "^\\+?[0-9]{9,15}$", message = "Telefónne číslo musí mať 9 až 15 číslic")
+    @Pattern(regexp= "^\\+421\\d{9}$", message= "Telefónne číslo musí začínať +421 a obsahovať presne 9 číslic za ním")
     private String telefon;
 
     @NotBlank(message = "Heslo nesmie byť prázdne")

@@ -55,6 +55,7 @@ public class PouzivatelService {
         user.setHeslo(passwordEncoder.encode(dto.getHeslo()));
         user.setAktivny(true);
         user.setTelefon(dto.getTelefon());
+        user.setObrazokUrl("/uploads/User.jpg");
 
         Rola zakladnaRola = rolaRepository.findByNazov("ROLE_ZAKAZNIK")
                 .orElseThrow(() -> new ObjectNotFoundException("Rola", "ROLE_ZAKAZNIK"));

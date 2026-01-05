@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import sk.ukf.pizzeria.entity.PolozkaKosika;
 import sk.ukf.pizzeria.entity.Pouzivatel;
-import sk.ukf.pizzeria.service.PizzaService;
 import sk.ukf.pizzeria.service.PolozkaKosikaService;
 import sk.ukf.pizzeria.service.PouzivatelService;
 
@@ -24,9 +23,6 @@ public class KosikController {
 
     @Autowired
     private PouzivatelService pouzivatelService;
-
-    @Autowired
-    private PizzaService pizzaService;
 
     @GetMapping
     public String showCart(Model model, Principal principal) {

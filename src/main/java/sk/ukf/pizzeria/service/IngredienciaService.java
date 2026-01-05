@@ -34,10 +34,6 @@ public class IngredienciaService {
         repository.deleteById(id);
     }
 
-    public Ingrediencia getById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Ingrediencia", id));
-    }
     public List<Ingrediencia> findAllById(List<Long> ids) {
         return repository.findAllById(ids);
     }
