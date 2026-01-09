@@ -82,6 +82,24 @@
                        th:value="${query}" placeholder="Hľadať pizzu (názov, tag)...">
                 <button class="btn btn-pizza-red px-4" type="submit">Hľadať</button>
             </form>
+            <div class="text-center mb-4">
+                <span class="text-white-50 small d-block mb-2">Rýchle filtre:</span>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <th:block th:each="t : ${allTags}">
+                        <a th:href="@{/search(query=${t.nazov})}"
+                           class="badge rounded-pill text-decoration-none p-2 px-3 shadow-sm"
+                           th:classappend="${query == t.nazov} ? 'bg-danger text-white' : 'bg-dark text-white-50 border border-secondary'"
+                           th:text="${t.nazov}">
+                            Tag
+                        </a>
+                    </th:block>
+
+                    <a th:if="${query != null}" th:href="@{/}"
+                       class="badge rounded-pill border border-danger text-decoration-none p-2 px-3 text-danger">
+                        Zrušiť filter [x]
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

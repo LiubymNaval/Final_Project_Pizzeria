@@ -11,12 +11,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import sk.ukf.pizzeria.entity.Pizza;
 import sk.ukf.pizzeria.service.PizzaService;
 import org.springframework.ui.Model;
+import sk.ukf.pizzeria.service.TagService;
 
 @Controller
 public class PizzaController {
 
     @Autowired
     private PizzaService pizzaService;
+
+    @Autowired
+    private TagService tagService;
 
     @GetMapping("/")
     public String listPizzas(@RequestParam(defaultValue = "0") int page, Model model) {
@@ -27,6 +31,7 @@ public class PizzaController {
         model.addAttribute("pizzas", pizzaPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pizzaPage.getTotalPages());
+        model.addAttribute("allTags", tagService.getAllTags());
         return "index";
     }
     @GetMapping("/search")
@@ -41,6 +46,7 @@ public class PizzaController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", pizzaPage.getTotalPages());
         model.addAttribute("query", query);
+        model.addAttribute("allTags", tagService.getAllTags());
         return "index";
     }
 
