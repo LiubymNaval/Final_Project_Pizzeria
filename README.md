@@ -8,7 +8,7 @@ Tento projekt je implementácia webovej aplikácie pre pizzeriu v rámci predmet
 3. Kliknite na **Import**.
 4. Vyberte súbor `db_full.sql` z koreňového adresára projektu.
 5. Kliknite na **Vykonať (Go)**. 
-   - Skript automaticky vytvorí databázu `pizzeria_db` a naplní ju demo dátami.
+   - Skript automaticky vytvorí databázu `Pizzeria` a naplní ju demo dátami.
 6. Skontrolujte nastavenia v `src/main/resources/application.properties` (prihlasovacie údaje k DB).
 7. Spustite aplikáciu a otvorte `http://localhost:8080`.
 
