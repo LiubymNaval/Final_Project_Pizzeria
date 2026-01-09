@@ -6,7 +6,7 @@ Tento projekt je implementácia webovej aplikácie pre pizzeriu v rámci predmet
 1. Importujte projekt do IntelliJ IDEA ako Maven projekt.
 2. Otvorte rozhranie **phpMyAdmin**.
 3. Kliknite na **Import**.
-4. Vyberte súbor `db_full.sql` z koreňového adresára projektu.
+4. Vyberte súbor db_full.sql z adresára database/.
 5. Kliknite na **Vykonať (Go)**. 
    - Skript automaticky vytvorí databázu `Pizzeria` a naplní ju demo dátami.
 6. Skontrolujte nastavenia v `src/main/resources/application.properties` (prihlasovacie údaje k DB).
